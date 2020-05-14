@@ -245,7 +245,7 @@ double logdet(int p,double** m)
 // Computes the log of the marginal likelihoood for normal linear regression with inverse gamma prior.
 double marglik(int n,int p,double** data,int lenA,int* A)
 {
-	double t;
+	double lml;
 	int i,j,k;
 	
 	// printf("At the beginning!");
@@ -301,12 +301,12 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	printmatrix("mA.mat", lenA, lenA, mA);
 
 
-	t = lgamma(n + lenA + 2)/2 - lgamma((lenA + 2)/2);	
+	lml = lgamma(n + lenA + 2)/2 - lgamma((lenA + 2)/2) - (1/2)*logdet(lenA, mA) - ((n + lenA + 2)/2);
 
 	// free(d1);
 	// free(dA);
 
-	return(t);
+	return(lml);
 
 }
 
