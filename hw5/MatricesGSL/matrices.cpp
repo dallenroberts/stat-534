@@ -142,3 +142,18 @@ double logdet(gsl_matrix* K)
 	return(logdet);
 }
 
+// Computes the log marginal likelihood of the normal linear regression with inverse gamma prior
+double marglik(gsl_matrix* data,int lenA,int* A)
+{
+	double lml;
+
+
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0);
+
+	return(lml);
+
+
+}
+
+
+
