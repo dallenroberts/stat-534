@@ -281,7 +281,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	double** tdA = transposematrix(n,lenA, dA);
 	printmatrix("tdA.mat", lenA, n, tdA);
 
-	double** mA1 = allocmatrix(lenA, lenA);
+	double* mA1 = (double*)malloc((lenA * lenA) * sizeof(double));
 	set_mat_identity(lenA, mA1);
 	printmatrix("mA1.mat", lenA, lenA, mA1);
 
