@@ -283,7 +283,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	printmatrix("tdA.mat", lenA, n, tdA);
 
 	double** mA2 = allocmatrix(lenA, lenA);
-	mA2 = matrixproduct(lenA, n, lenA, tdA, dA, mA2);
+	matrixproduct(lenA, n, lenA, tdA, dA, mA2);
 	printmatrix("mA2.mat", lenA, lenA, mA2);
 
 
