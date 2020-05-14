@@ -29,4 +29,4 @@ gsl_matrix* MakeSubmatrix(gsl_matrix* M,
 			  int* IndRow,int lenIndRow,
 			  int* IndColumn,int lenIndColumn);
 double logdet(gsl_matrix* K);
-double marglik(gsl matrix* data, int lenA, int* A);
+double marglik(gsl_matrix* data, int lenA, int* A);
