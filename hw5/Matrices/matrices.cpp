@@ -1,3 +1,8 @@
+// Allen Roberts
+// Stat 534
+// Homework 5
+// May 14, 2020
+
 #include "matrices.h"
 
 //allocates the memory for a matrix with 
@@ -243,6 +248,10 @@ double logdet(int p,double** m)
 }
 
 // Computes the log of the marginal likelihoood for normal linear regression with inverse gamma prior.
+// Inputs: int n = number of rows of data matrix; int p = number of columns of data matrix; double ** data = data matrix;
+// int lenA = number of covariates; int* A = indices of covariates
+// Outputs: double lml = log marginal likelihood
+
 double marglik(int n,int p,double** data,int lenA,int* A)
 {
 	double lml;
@@ -256,7 +265,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 			d1[j][0] = data[j][0];
 	}
 
-	printmatrix("d1.mat", n, 1, d1);
+	// printmatrix("d1.mat", n, 1, d1);
 
 	// Create matrix just containing variables specified in A
 	double** dA = allocmatrix(n, lenA);
@@ -271,15 +280,16 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 		}
 	}
 
-	printmatrix("dA.mat", n, lenA, dA);
+	// printmatrix("dA.mat", n, lenA, dA);
 
 	// Calculate MA
 	double** tdA = transposematrix(n,lenA, dA);
-	printmatrix("tdA.mat", lenA, n, tdA);
+	// printmatrix("tdA.mat", lenA, n, tdA);
 
 	double** mA = allocmatrix(lenA, lenA);
 	matrixproduct(lenA, n, lenA, tdA, dA, mA);
 	
+	// Need to add identity matrix to matrix product defined above
 	for(i=0;i<lenA;i++)
 	{
 		for(j=0;j<lenA;j++)
@@ -292,48 +302,40 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 
 		}
 	}
-	printmatrix("mA.mat", lenA, lenA, mA);
+	// printmatrix("mA.mat", lenA, lenA, mA);
 
 	// Calculate log marginal likelihood following the equation given
 	double** td1 = transposematrix(n, 1, d1);
 
 	double** td1_d1 = allocmatrix(1, 1);
 	matrixproduct(1, n, 1, td1, d1, td1_d1);
-	printmatrix("td1_d1.mat", 1, 1, td1_d1);
+	// printmatrix("td1_d1.mat", 1, 1, td1_d1);
 
 	double** td1_dA = allocmatrix(1, lenA);
 	matrixproduct(1, n, lenA, td1, dA, td1_dA);
-	printmatrix("td1_dA.mat", 1, lenA, td1_dA);
+	// printmatrix("td1_dA.mat", 1, lenA, td1_dA);
 
 	double** mAInverse = allocmatrix(lenA,lenA);
     copymatrix(lenA,lenA,mA,mAInverse);
 	inverse(lenA,mAInverse);
-	printmatrix("mAInverse.mat", lenA, lenA, mAInverse);
+	// printmatrix("mAInverse.mat", lenA, lenA, mAInverse);
 
 	double** tdA_d1 = allocmatrix(lenA, 1);
 	matrixproduct(lenA, n, 1, tdA, d1, tdA_d1);
-	printmatrix("tdA_d1.mat", lenA, 1, tdA_d1);
+	// printmatrix("tdA_d1.mat", lenA, 1, tdA_d1);
 
 	double** td1_dA_mAInverse = allocmatrix(1,lenA);
 	matrixproduct(1, lenA, lenA, td1_dA, mAInverse, td1_dA_mAInverse);
-	printmatrix("td1_dA_mAInverse.mat", 1, lenA, td1_dA_mAInverse);
+	// printmatrix("td1_dA_mAInverse.mat", 1, lenA, td1_dA_mAInverse);
 
 	double** td1_dA_mAInverse_tdA_d1 = allocmatrix(1,1);
 	matrixproduct(1, lenA, 1, td1_dA_mAInverse, tdA_d1, td1_dA_mAInverse_tdA_d1);
-	printmatrix("td1_dA_mAInverse_tdA_d1.mat", 1, 1, td1_dA_mAInverse_tdA_d1);
+	// printmatrix("td1_dA_mAInverse_tdA_d1.mat", 1, 1, td1_dA_mAInverse_tdA_d1);
 
+	// Compute log marginal likelihood
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
-	// free(d1);
-	// free(dA);
-	// free(tdA);
-	// free(mA);
-	// free(td1);
-	// free(td1_d1);
-	// free(mAInverse);
-	// free(tdA_d1);
-	// free(td1_dA_mAInverse);
-	// free(td1_dA_mAInverse_tdA_d1);
+	// Free memory
 	freematrix(n,d1);
 	freematrix(n,dA);
 	freematrix(lenA, tdA);
