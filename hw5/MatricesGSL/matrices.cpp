@@ -206,7 +206,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 
 	// Calculate log marginal likelihood
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
-	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + *td1_d1);
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + gsl_matrix_get(td1_d1, 1, 1);
 
 	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
