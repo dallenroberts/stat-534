@@ -278,17 +278,13 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	printmatrix("dA.mat", n, lenA, dA);
 
 	// printf("Made it past dA");
+
+	// Calculate MA
 	double** tdA = transposematrix(n,lenA, dA);
 	printmatrix("tdA.mat", lenA, n, tdA);
 
-	double* mA1 = (double*)malloc((lenA * lenA) * sizeof(double));
-	set_mat_identity(lenA, mA1);
-
-	double** mA2 = allocmatrix(lenA, lenA);
-	matrixproduct(lenA, n, lenA, tdA, dA, mA2);
-	printmatrix("mA2.mat", lenA, lenA, mA2);
-
 	double** mA = allocmatrix(lenA, lenA);
+	matrixproduct(lenA, n, lenA, tdA, dA, mA);
 	
 	for(i=0;i<lenA;i++)
 	{
@@ -296,7 +292,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 		{
 			if(i==j)
 			{
-				mA2[i][j] += 1;
+				mA[i][j] += 1;
 			}
 
 
