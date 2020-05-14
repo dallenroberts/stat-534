@@ -202,11 +202,27 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	matrixproduct(td1, d1, td1_d1);
 
 	// Make m inverse
+	gsl_matrix* mAInverse = inverse(mA);
 
+	// Create matrix to hold td1*dA
+	gsl_matrix* td1_dA = gsl_matrix_alloc(1,3);
+	matrixproduct(td1, dA, td1_dA);
+
+	// Create matrix to hold td1*dA*mAInverse
+	gsl_matrix* td1_dA_mAInverse = gsl_matrix_alloc(1,3);
+	matrixproduct(td1_dA, mAInverse, td1_dA_mAInverse);
+
+	// Create matrix to hold tdA*d1
+	gsl_matrix* tdA_d1 = gsl_matrix_alloc(3,1);
+	matrixproduct(tdA, d1, tdA_d1);
+
+	// Create matrix to hold td1*dA*mAInverse*tdA*d1)
+	gsl_matrix* td1_dA_mAInverse_tdA_d1 = gsl_matrix_alloc(1,1);
+	matrixproduct(td1_dA_mAInverse, tdA_d1, td1_dA_mAInverse_tdA_d1);
 
 	// Calculate log marginal likelihood
 	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
-	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + gsl_matrix_get(td1_d1, 0, 0));
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + gsl_matrix_get(td1_d1, 0, 0) - gsl_matrix_get(td1_dA_mAInverse_tdA_d1, 0, 0));
 
 	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
@@ -219,7 +235,12 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	gsl_matrix_free(AId);
 	gsl_matrix_free(mA);
 	gsl_matrix_free(td1);
-	// gsl_matrix_free(td1_d1);
+	gsl_matrix_free(td1_d1);
+	gsl_matrix_free(mAInverse);
+	gsl_matrix_free(td1_dA);
+	gsl_matrix_free(td1_dA_mAInverse);
+	gsl_matrix_free(tdA_d1);
+	gsl_matrix_free(td1_dA_mAInverse_tdA_d1);
 
 	return(lml);
 
