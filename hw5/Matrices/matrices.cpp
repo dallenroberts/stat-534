@@ -269,7 +269,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	{
 		k = A[i] - 1; // C indexes at 0
 
-		printf(k);
+		//printf(",%i",k);
 
 		for(j=0;j<n;j++)
 		{
