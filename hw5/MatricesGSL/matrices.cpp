@@ -181,8 +181,18 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	dA = MakeSubmatrix(data, rows, n, colsA, lenA);
 	printmatrix("dA.mat",dA);
 
-	// Make mA
+	// Make tdA
+	gsl_matrix* tdA = transposematrix(dA);
 
+	// Make identity matrix with dim lenA
+	gsl_matrix* AId = gsl_matrix_alloc(lenA,lenA);
+	gsl_matrix_set_identity(AId);
+
+	// Make mA
+	gsl_matrix* mA = gsl_matrix_alloc(lenA,lenA);
+	matrixproduct(tdA, dA, mA);
+	gsl_matrix_add(mA, AId);
+	printmatrix("mA.mat",mA);
 
 	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0);
@@ -190,6 +200,11 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	delete[] rows; rows = NULL;
 	delete[] cols1; cols1 = NULL;
 	delete[] colsA; colsA = NULL;
+	gsl_matrix_free(d1);
+	gsl_matrix_free(dA);
+	gsl_matrix_free(tdA);
+	gsl_matrix_free(AId);
+	gsl_matrix_free(mA);
 
 	return(lml);
 
