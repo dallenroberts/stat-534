@@ -159,15 +159,19 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 		rows[i]=i;
 	}
 
-	// Initialize vector corresponding to columns needed for MakeSubmatrix
+	// Initialize vectors corresponding to columns needed for MakeSubmatrix for d1
 	int * cols1 = new int[1];
 	cols1[0] = 0;
 
+	// Make d1
 	gsl_matrix* d1 = gsl_matrix_alloc(1,n);
-
 	d1 = MakeSubmatrix(data, rows, n, cols1, 1); 
-
 	printmatrix("d1.mat",d1);
+
+	// Make dA
+	gsl_matrix* dA = gsl_matrix_alloc(lenA, n);
+	dA = MakeSubmatrix(data, rows, n, A, lenA);
+	printmatrix("dA.mat",dA);
 
 	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0);
