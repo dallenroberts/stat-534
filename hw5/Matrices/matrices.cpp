@@ -294,7 +294,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	}
 	printmatrix("mA.mat", lenA, lenA, mA);
 
-	// Calculate lml
+	// Calculate log marginal likelihood following the equation given
 	double** td1 = transposematrix(n, 1, d1);
 
 	double** td1_d1 = allocmatrix(1, 1);
@@ -324,16 +324,26 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
-	free(d1);
-	free(dA);
-	free(tdA);
-	free(mA);
-	free(td1);
-	free(td1_d1);
-	free(mAInverse);
-	free(tdA_d1);
-	free(td1_dA_mAInverse);
-	free(td1_dA_mAInverse_tdA_d1);
+	// free(d1);
+	// free(dA);
+	// free(tdA);
+	// free(mA);
+	// free(td1);
+	// free(td1_d1);
+	// free(mAInverse);
+	// free(tdA_d1);
+	// free(td1_dA_mAInverse);
+	// free(td1_dA_mAInverse_tdA_d1);
+	freematrix(n,d1);
+	freematrix(n,dA);
+	freematrix(lenA, tdA);
+	freematrix(lenA, mA);
+	freematrix(1, td1);
+	freematrix(1, td1_d1);
+	freematrix(lenA, mAInverse);
+	freematrix(lenA, tdA_d1);
+	freematrix(1, td1_dA_mAInverse);
+	freematrix(1, td1_dA_mAInverse_tdA_d1);
 
 	return(lml);
 
