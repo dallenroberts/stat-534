@@ -198,8 +198,8 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	gsl_matrix* td1 = transposematrix(td1);
 
 	// Make td1 * d1
-	gsl_matrix* td1_d1 = gsl_matrix_alloc(1,1);
-	matrixproduct(td1, d1, td1_d1);
+	// gsl_matrix* td1_d1 = gsl_matrix_alloc(1,1);
+	// matrixproduct(td1, d1, td1_d1);
 
 	// Make m inverse
 
