@@ -300,6 +300,12 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	}
 	printmatrix("mA.mat", lenA, lenA, mA);
 
+	// Calculate lml
+	double** td1_d1 = allocmatrix(1, 1);
+	matrixproduct(1, n, 1, transposematrix(n, 1, d1), d1, td1_d1);
+	printmatrix("td1_d1.mat", 1, 1, td1_d1);
+
+
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0);
 
 	// free(d1);
