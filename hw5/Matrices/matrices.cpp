@@ -333,8 +333,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	// printmatrix("td1_dA_mAInverse_tdA_d1.mat", 1, 1, td1_dA_mAInverse_tdA_d1);
 
 	// Compute log marginal likelihood
-	lml = lgamma(((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - 
-		((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1));
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
 	// Free memory
 	freematrix(n,d1);
