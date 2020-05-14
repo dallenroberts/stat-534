@@ -269,8 +269,6 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	{
 		k = A[i] - 1; // C indexes at 0
 
-		printf(",%i",k);
-
 		for(j=0;j<n;j++)
 		{
 			dA[j][i] = data[j][k];
@@ -280,9 +278,13 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	printmatrix("dA.mat", n, lenA, dA);
 
 	// printf("Made it past dA");
+	double** tdA = allocmatrix(lenA, n);
+	tdA = transposematrix(n,lenA, dA);
+	printmatrix("tdA.mat", lenA, n, tdA);
 
-	// double** mA = allocmatrix(lenA, lenA);
-	// transposematrix(n,p-1,dA)
+	double** mA2 = allocmatrix(lenA, lenA);
+	mA2 = matrixproduct(lenA, n, lenA, tdA, dA, mA2);
+	printmatrix("mA2.mat", lenA, lenA, mA2);
 
 
 	t = lgamma(n + lenA + 2)/2 - lgamma((lenA + 2)/2);	
