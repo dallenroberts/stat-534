@@ -300,9 +300,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	}
 	printmatrix("mA.mat", lenA, lenA, mA);
 
-	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA);
-	// lml = lgamma(n + lenA + 2.0)/2.0 - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA);
-	// lml = lgamma(n + lenA + 2.0)/2.0 - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0);
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0);
 
 	// free(d1);
 	// free(dA);
