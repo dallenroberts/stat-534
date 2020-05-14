@@ -159,9 +159,17 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 		rows[i]=i;
 	}
 
-	// Initialize vectors corresponding to columns needed for MakeSubmatrix for d1
+	// Initialize vector corresponding to columns needed for MakeSubmatrix for d1
 	int * cols1 = new int[1];
 	cols1[0] = 0;
+
+	// Initialize vector corresponding to columns needed for MakeSubmatrix for dA
+	int * colsA = new int[lenA];
+	for(j=0;j<lenA;j++) {
+
+		colsA = A[j]-1; // C indexes at 0
+
+	}
 
 	// Make d1
 	gsl_matrix* d1 = gsl_matrix_alloc(1,n);
