@@ -283,7 +283,6 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 
 	double* mA1 = (double*)malloc((lenA * lenA) * sizeof(double));
 	set_mat_identity(lenA, mA1);
-	printmatrix("mA1.mat", lenA, lenA, mA1);
 
 	double** mA2 = allocmatrix(lenA, lenA);
 	matrixproduct(lenA, n, lenA, tdA, dA, mA2);
