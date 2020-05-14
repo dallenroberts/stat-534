@@ -248,8 +248,6 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	double lml;
 	int i,j,k;
 	
-	// printf("At the beginning!");
-
 	// Create matrix just containing response variable
 	double** d1 = allocmatrix(n,1);
 	
@@ -257,8 +255,6 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	{
 			d1[j][0] = data[j][0];
 	}
-
-	// printf("Made it past d1");
 
 	printmatrix("d1.mat", n, 1, d1);
 
@@ -276,8 +272,6 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	}
 
 	printmatrix("dA.mat", n, lenA, dA);
-
-	// printf("Made it past dA");
 
 	// Calculate MA
 	double** tdA = transposematrix(n,lenA, dA);
@@ -328,17 +322,19 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	matrixproduct(1, lenA, 1, td1_dA_mAInverse, tdA_d1, td1_dA_mAInverse_tdA_d1);
 	printmatrix("td1_dA_mAInverse_tdA_d1.mat", 1, 1, td1_dA_mAInverse_tdA_d1);
 
-
-	double sum1, sum2;
-	sum1 = **td1_d1;
-	sum2 = **td1_dA_mAInverse_tdA_d1;
-
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
-	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + td1_d1[1,1] - td1_dA_mAInverse_tdA_d1[1,1]);
 
-	// free(d1);
-	// free(dA);
-
+	free(d1);
+	free(dA);
+	free(tdA);
+	free(mA);
+	free(td1);
+	free(td1_d1);
+	free(mAInverse);
+	free(tdA_d1);
+	free(td1_dA_mAInverse);
+	free(td1_dA_mAInverse_tdA_d1)
+	
 	return(lml);
 
 }
