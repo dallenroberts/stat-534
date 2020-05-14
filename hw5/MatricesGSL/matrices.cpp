@@ -219,7 +219,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	gsl_matrix_free(AId);
 	gsl_matrix_free(mA);
 	gsl_matrix_free(td1);
-	gsl_matrix_free(td1_d1);
+	// gsl_matrix_free(td1_d1);
 
 	return(lml);
 
