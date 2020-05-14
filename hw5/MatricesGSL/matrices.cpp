@@ -167,7 +167,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	int * colsA = new int[lenA];
 	for(j=0;j<lenA;j++) {
 
-		colsA = A[j]-1; // C indexes at 0
+		colsA[j] = A[j]-1; // C indexes at 0
 
 	}
 
