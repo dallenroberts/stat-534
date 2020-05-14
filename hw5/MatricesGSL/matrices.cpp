@@ -194,8 +194,21 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	gsl_matrix_add(mA, AId);
 	printmatrix("mA.mat",mA);
 
+	// Make td1
+	gsl_matrix* td1 = transposematrix(td1);
+
+	// Make td1 * d1
+	gsl_matrix* td1_d1 = gsl_matrix_alloc(1,1);
+	matrixproduct(td1, d1, td1_d1);
+
+	// Make m inverse
+
+
 	// Calculate log marginal likelihood
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + *td1_d1);
+
+	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
 	delete[] rows; rows = NULL;
 	delete[] cols1; cols1 = NULL;
@@ -205,6 +218,8 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	gsl_matrix_free(tdA);
 	gsl_matrix_free(AId);
 	gsl_matrix_free(mA);
+	gsl_matrix_free(td1);
+	gsl_matrix_free(td1_d1);
 
 	return(lml);
 
