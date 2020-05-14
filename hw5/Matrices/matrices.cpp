@@ -316,6 +316,10 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	inverse(lenA,mAInverse);
 	printmatrix("mAInverse.mat", lenA, lenA, mAInverse);
 
+	double** tdA_d1 = allocmatrix(lenA, 1);
+	matrixproduct(lenA, n, 1, tdA, d1, tdA_d1);
+	printmatrix("tdA_d1.mat", lenA, 1, tdA_d1);
+
 
 	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(lenA, mA) - ((n + lenA + 2.0)/2.0);
 
