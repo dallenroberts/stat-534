@@ -298,7 +298,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 
 		}
 	}
-	printmatrix("mA.mat", lenA, lenA, mA2);
+	printmatrix("mA.mat", lenA, lenA, mA);
 
 
 	t = lgamma(n + lenA + 2)/2 - lgamma((lenA + 2)/2);	
