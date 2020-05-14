@@ -178,7 +178,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 
 	// Make dA
 	gsl_matrix* dA = gsl_matrix_alloc(lenA, n);
-	dA = MakeSubmatrix(data, rows, n, A, lenA);
+	dA = MakeSubmatrix(data, rows, n, colsA, lenA);
 	printmatrix("dA.mat",dA);
 
 	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
