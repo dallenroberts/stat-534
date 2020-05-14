@@ -333,8 +333,8 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	free(mAInverse);
 	free(tdA_d1);
 	free(td1_dA_mAInverse);
-	free(td1_dA_mAInverse_tdA_d1)
-	
+	free(td1_dA_mAInverse_tdA_d1);
+
 	return(lml);
 
 }
