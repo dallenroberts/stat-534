@@ -294,7 +294,11 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	{
 		for(j=0;j<lenA;j++)
 		{
-			mA[i][j] = mA1[i][j] + mA2[i][j];
+			if(i==j)
+			{
+				mA2[i][j] += 1;
+			}
+
 
 		}
 	}
