@@ -195,7 +195,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	printmatrix("mA.mat",mA);
 
 	// Make td1
-	gsl_matrix* td1 = transposematrix(td1);
+	gsl_matrix* td1 = transposematrix(d1);
 
 	// Make td1 * d1
 	// gsl_matrix* td1_d1 = gsl_matrix_alloc(1,1);
