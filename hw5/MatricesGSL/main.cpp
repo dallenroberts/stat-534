@@ -1,3 +1,8 @@
+// Allen Roberts
+// Stat 534
+// Homework 5
+// May 14, 2020
+
 #include "matrices.h"
 
 int main()

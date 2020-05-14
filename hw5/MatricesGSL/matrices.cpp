@@ -1,3 +1,8 @@
+// Allen Roberts
+// Stat 534
+// Homework 5
+// May 14, 2020
+
 #include "matrices.h"
 
 //prints the elements of a matrix in a file
@@ -143,6 +148,9 @@ double logdet(gsl_matrix* K)
 }
 
 // Computes the log marginal likelihood of the normal linear regression with inverse gamma prior
+// Inputs: gsl_matrix* data = data matrix; int lenA = number of covariates; int* A = indices of covariates
+// Outputs: double lml = log marginal likelihood
+
 double marglik(gsl_matrix* data,int lenA,int* A)
 {
 	double lml;
@@ -174,12 +182,12 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	// Make d1
 	gsl_matrix* d1 = gsl_matrix_alloc(1,n);
 	d1 = MakeSubmatrix(data, rows, n, cols1, 1); 
-	printmatrix("d1.mat",d1);
+	// printmatrix("d1.mat",d1);
 
 	// Make dA
 	gsl_matrix* dA = gsl_matrix_alloc(lenA, n);
 	dA = MakeSubmatrix(data, rows, n, colsA, lenA);
-	printmatrix("dA.mat",dA);
+	// printmatrix("dA.mat",dA);
 
 	// Make tdA
 	gsl_matrix* tdA = transposematrix(dA);
@@ -192,7 +200,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	gsl_matrix* mA = gsl_matrix_alloc(lenA,lenA);
 	matrixproduct(tdA, dA, mA);
 	gsl_matrix_add(mA, AId);
-	printmatrix("mA.mat",mA);
+	// printmatrix("mA.mat",mA);
 
 	// Make td1
 	gsl_matrix* td1 = transposematrix(d1);
@@ -221,11 +229,12 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	matrixproduct(td1_dA_mAInverse, tdA_d1, td1_dA_mAInverse_tdA_d1);
 
 	// Calculate log marginal likelihood
-	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA);
-	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + gsl_matrix_get(td1_d1, 0, 0) - gsl_matrix_get(td1_dA_mAInverse_tdA_d1, 0, 0));
+	lml = (lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - 
+		((n + lenA + 2.0)/2.0)*log(1.0 + gsl_matrix_get(td1_d1, 0, 0) - 
+		gsl_matrix_get(td1_dA_mAInverse_tdA_d1, 0, 0)));
 
-	// lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(mA) - ((n + lenA + 2.0)/2.0)*log(1.0 + **td1_d1 - **td1_dA_mAInverse_tdA_d1);
 
+	// Deallocate memory
 	delete[] rows; rows = NULL;
 	delete[] cols1; cols1 = NULL;
 	delete[] colsA; colsA = NULL;
