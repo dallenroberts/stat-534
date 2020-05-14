@@ -290,7 +290,15 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	printmatrix("mA2.mat", lenA, lenA, mA2);
 
 	double** mA = allocmatrix(lenA, lenA);
-	mA = mA1 + mA2;
+	
+	for(i=0;i<lenA;i++)
+	{
+		for(j=0;j<lenA;j++)
+		{
+			mA[i][j] = mA1[i][j] + mA2[i][j];
+
+		}
+	}
 	printmatrix("mA.mat", lenA, lenA, mA);
 
 
