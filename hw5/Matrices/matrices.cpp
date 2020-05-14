@@ -281,9 +281,17 @@ double marglik(int n,int p,double** data,int lenA,int* A)
 	double** tdA = transposematrix(n,lenA, dA);
 	printmatrix("tdA.mat", lenA, n, tdA);
 
+	double** mA1 = allocmatrix(lenA, lenA);
+	set_mat_identity(lenA, mA1);
+	printmatrix("mA1.mat", lenA, lenA, mA1);
+
 	double** mA2 = allocmatrix(lenA, lenA);
 	matrixproduct(lenA, n, lenA, tdA, dA, mA2);
 	printmatrix("mA2.mat", lenA, lenA, mA2);
+
+	double** mA = allocmatrix(lenA, lenA);
+	mA = mA1 + mA2;
+	printmatrix("mA.mat", lenA, lenA, mA);
 
 
 	t = lgamma(n + lenA + 2)/2 - lgamma((lenA + 2)/2);	
