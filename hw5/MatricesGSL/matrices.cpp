@@ -151,7 +151,7 @@ double marglik(gsl_matrix* data,int lenA,int* A)
 	int p = data -> size2;
 
 
-	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0);
+	lml = lgamma((n + lenA + 2.0)/2.0) - lgamma((lenA + 2.0)/2.0) - (1.0/2.0)*logdet(data);
 
 	return(lml);
 
