@@ -44,11 +44,11 @@ double getDeterminant(int nrow)
 
 			if(j<k){
 
-				gsl_matrix_set(minor, i+1, j, gsl_matrix_get(m, i+1, j));
+				gsl_matrix_set(minor, i, j, gsl_matrix_get(m, i+1, j));
 
 			} else {
 
-				gsl_matrix_set(minor, i+1, j, gsl_matrix_get(m, i+1, j+1));
+				gsl_matrix_set(minor, i, j, gsl_matrix_get(m, i+1, j+1));
 
 			}
 		}
