@@ -37,7 +37,6 @@ double getDeterminant(gsl_matrix * m, int n)
 	double a;
 	double det = 0;
 	int k;
-	gsl_matrix * minor;
 
 	printf("\nHello (matrix) world.\n");
 	printf("\nn = %d", n);
