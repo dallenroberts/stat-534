@@ -12,12 +12,12 @@ void setMinor(gsl_matrix * m, int n, int k, gsl_matrix * minor) {
 
 	for(i=0;i<(n-1);i++) {
 
-		printf("\ni = %d", i);
+		// printf("\ni = %d", i);
 
 
 		for(j=0; j<(n-1);j++) {
 
-			printf("\nj = %d", j);
+			// printf("\nj = %d", j);
 
 			if(j<k){
 
