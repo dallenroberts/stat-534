@@ -31,11 +31,11 @@ double getDeterminant(int nrow)
 
 	// Define minor matrix by removing the first row and the kth column (where k ranges from 0 to n-1) from an nxn matrix m
 	k = 3;
-	gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
+	gsl_matrix * minor = gsl_matrix_alloc(nrow-1, nrow-1);
 
-	for(i=0;i<(n-1);i++) {
+	for(i=0;i<(nrow-1);i++) {
 
-		for(j=0; j<(n-1);j++) {
+		for(j=0; j<(nrow-1);j++) {
 
 			if(j<k){
 
