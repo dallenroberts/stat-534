@@ -1,3 +1,8 @@
+// Allen Roberts
+// Stat 534
+// May 17, 2020
+// Homework 6
+
 #include "matrices.h"
 
 // Function to return the minor of a matrix for which we want to calculate the determinant
@@ -33,6 +38,7 @@ void setMinor(gsl_matrix * m, int n, int k, gsl_matrix * minor) {
 
 }
 
+// Function that inputs an nxn gsl_matrix * and returns the determinant as a double
 double getDeterminant(gsl_matrix * m, int n)
 {
 
@@ -91,10 +97,13 @@ int main()
 	gsl_matrix_fscanf(f, m);
 	fclose(f);
 
+	// Calculate determinant
 	det = getDeterminant(m, n);
 
+	// Free memory
 	gsl_matrix_free(m);
 
+	// Print determinant to console
 	printf("The determinant of the matrix is: %.4lf\n", det);
 
 	return(1);
