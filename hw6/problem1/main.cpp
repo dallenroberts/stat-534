@@ -35,7 +35,12 @@ double getDeterminant(int nrow)
 
 	for(i=0;i<(nrow-1);i++) {
 
+		printf("\ni = %d", i);
+
+
 		for(j=0; j<(nrow-1);j++) {
+
+			printf("\nj = %d", j);
 
 			if(j<k){
 
