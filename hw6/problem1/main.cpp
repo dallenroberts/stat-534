@@ -60,7 +60,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	// Calculate determinant provided by formula
 	for(k=0; k<n; k++) {
 
-		a = gsl_matrix_get(m, 0, k)*(-1)^(k);
+		a = gsl_matrix_get(m, 0, k)*(-1)^((double)k);
 
 		minor = getMinor(m, n, k);
 
