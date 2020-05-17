@@ -10,8 +10,6 @@ double getDeterminant(int n)
 	gsl_matrix_fscanf(f, m);
 	fclose(f);
 
-	gsl_matrix_fprintf(FILE * stream, const gsl_matrix * m, const char * format)
-
 	printmatrix("test.dat", m);
 
 	return(1);
