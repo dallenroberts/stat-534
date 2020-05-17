@@ -4,7 +4,7 @@
 // Omits the first row and the kth column
 // Input: gsl_matrix * m = nxn matrix; int n = number of rows and columns for m; 
 // int k: index of column to omit, ranges from 0 to n-1
-gsl matrix * getMinor(gsl_matrix * m, int n, int k) {
+gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
 
 	int i,j;
 
