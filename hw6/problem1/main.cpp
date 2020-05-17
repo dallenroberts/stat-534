@@ -75,8 +75,6 @@ double getDeterminant(gsl_matrix * m, int n)
 	}
 	gsl_matrix_free(minor);
 
-	gsl_matrix_free(m);
-
 	return(det);
 
 }
@@ -96,6 +94,8 @@ int main()
 	fclose(f);
 
 	det = getDeterminant(m, n);
+
+	gsl_matrix_free(m);
 
 	printf("The determinant of the matrix is: %.4lf\n", det);
 
