@@ -1,18 +1,34 @@
 #include "matrices.h"
 
-double getDeterminant(int n)
+double getDeterminant(int nrow)
 {
+
+	int n;
+	double det;
 
 	printf("Hello (matrix) world.\n");
 
-	gsl_matrix * m = gsl_matrix_alloc(n, n);
+	// Read in banded matrix
+	gsl_matrix * m = gsl_matrix_alloc(nrow, nrow);
 	FILE * f = fopen("mybandedmatrix.txt", "r");
 	gsl_matrix_fscanf(f, m);
 	fclose(f);
 
-	printmatrix("test.dat", m);
+	n = 1;
 
-	return(1);
+	// Edge cases
+	if(n == 1) {
+
+		det = m[0,0];
+
+	} else if(n == 2) {
+
+		det = m[0,0]*m[1,1] - m[0,1]*m[1,0];
+
+	}
+	// printmatrix("test.mat", m);
+
+	return(det);
 
 }
 
