@@ -35,7 +35,7 @@ gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
 
 }
 
-double getDeterminant(gsl_matrix m *, int n)
+double getDeterminant(gsl_matrix * m, int n)
 {
 
 	double a;
