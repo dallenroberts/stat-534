@@ -38,7 +38,6 @@ gsl matrix * getMinor(gsl_matrix * m, int n, int k) {
 double getDeterminant(int n)
 {
 
-	int n;
 	double det;
 	int k;
 
@@ -69,7 +68,6 @@ double getDeterminant(int n)
 
 	minor = getMinor(m, n, k);
 	
-
 	printmatrix("minor.mat", minor);
 
 	return(5);
