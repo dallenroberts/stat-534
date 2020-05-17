@@ -50,8 +50,6 @@ double getDeterminant(int n)
 	gsl_matrix_fscanf(f, m);
 	fclose(f);
 
-	n = 3;
-
 	// Edge cases
 	if(n == 1) {
 
