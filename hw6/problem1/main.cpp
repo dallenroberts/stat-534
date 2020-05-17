@@ -4,7 +4,7 @@
 // Omits the first (zeroth) row and the kth column
 // Input: gsl_matrix * m = nxn matrix; int n = number of rows and columns for m; 
 // int k: index of column to omit, ranges from 0 to n-1
-gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
+void getMinor(gsl_matrix * m, int n, int k, gsl_matrix * minor) {
 
 	int i,j;
 
@@ -28,8 +28,6 @@ gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
 			}
 		}
 	}
-
-	return(minor);
 
 }
 
@@ -63,8 +61,8 @@ double getDeterminant(gsl_matrix * m, int n)
 		a = gsl_matrix_get(m, 0, k)*pow(-1, (double)k);
 
 		gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
-		
-		minor = getMinor(minor, n, k);
+
+		getMinor(m, n, k, minor);
 
 		// det += a * getDeterminant(minor, n-1);
 
