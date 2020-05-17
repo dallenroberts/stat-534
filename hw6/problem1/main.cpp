@@ -5,6 +5,7 @@ double getDeterminant(int nrow)
 
 	int n;
 	double det;
+	int i,j,k;
 
 	printf("Hello (matrix) world.\n");
 
@@ -14,7 +15,7 @@ double getDeterminant(int nrow)
 	gsl_matrix_fscanf(f, m);
 	fclose(f);
 
-	n = 2;
+	n = 3;
 
 	// Edge cases
 	if(n == 1) {
@@ -28,8 +29,29 @@ double getDeterminant(int nrow)
 
 	}
 
+	// Define minor matrix by removing the first row and the kth column (where k ranges from 0 to n-1) from an nxn matrix m
+	k = 3;
+	gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
 
-	return(det);
+	for(i=0;i<(n-1);i++) {
+
+		for(j=0; j<(n-1);j++) {
+
+			if(j<k){
+
+				gsl_matrix_set(minor, i+1, j, gsl_matrix_get(m, i+1, j));
+
+			} else {
+
+				gsl_matrix_set(minor, i+1, j+1, gsl_matrix_get(m, i+1, j+1));
+
+			}
+		}
+	}
+
+	printmatrix("minor.mat", minor);
+
+	return(5);
 
 }
 
@@ -37,6 +59,7 @@ double getDeterminant(int nrow)
 int main()
 {
 	
+	// Number of rows of the symmetric matrix for which we want to calculate the determinant
 	int n = 10;
 	double det;
 
