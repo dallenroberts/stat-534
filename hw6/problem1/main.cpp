@@ -19,14 +19,15 @@ double getDeterminant(int nrow)
 	// Edge cases
 	if(n == 1) {
 
-		det = gsl_matrix_get(m, 0,0);
-
-	} else if(n == 2) {
-
-		det = gsl_matrix_get(m,0,0)*gsl_matrix_get(m,1,1) - gsl_matrix_get(m,0,1)*gsl_matrix_get(m,1,0);
+		return(gsl_matrix_get(m, 0,0);
 
 	}
-	// printmatrix("test.mat", m);
+	if(n == 2) {
+
+		return(gsl_matrix_get(m,0,0)*gsl_matrix_get(m,1,1) - gsl_matrix_get(m,0,1)*gsl_matrix_get(m,1,0);
+
+	}
+
 
 	return(det);
 
