@@ -39,9 +39,8 @@ int main()
     A[0] = i+1;
     AddRegression(regressions,
                   lenA, A,
-                  marglik(data,lenA,A));
+                  marglik(n,p,data,lenA,(int*)A));
   }
-
 
   //save the list in a file
   SaveRegressions(outputfilename,regressions);
