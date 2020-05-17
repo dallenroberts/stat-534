@@ -8,7 +8,7 @@ void setMinor(gsl_matrix * m, int n, int k, gsl_matrix * minor) {
 
 	int i,j;
 
-	printf("\nSetting minor...");
+	// printf("\nSetting minor...");
 
 	for(i=0;i<(n-1);i++) {
 
@@ -40,8 +40,8 @@ double getDeterminant(gsl_matrix * m, int n)
 	double det = 0;
 	int k;
 
-	printf("\n\nGetting determinant...\n");
-	printf("n = %d \n", n);
+	// printf("\n\nGetting determinant...\n");
+	// printf("n = %d \n", n);
 
 	// Edge cases
 	if(n == 1) {
@@ -51,7 +51,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	}
 	if(n == 2) {
 
-		printf("Calculated determinant!\n");
+		// printf("Calculated determinant!\n");
 
 		return(gsl_matrix_get(m,0,0)*gsl_matrix_get(m,1,1) - gsl_matrix_get(m,0,1)*gsl_matrix_get(m,1,0));
 
@@ -62,7 +62,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	// Calculate determinant provided by formula
 	for(k=0; k<n; k++) {
 
-		printf("\nk = %d", k);
+		// printf("\nk = %d", k);
 
 		a = gsl_matrix_get(m, 0, k)*pow(-1, (double)k);
 
