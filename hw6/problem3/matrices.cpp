@@ -1,75 +1,7 @@
 #include "matrices.h"
 
-//allocates the memory for a matrix with 
-//n rows and p columns
-double ** allocmatrix(int n,int p)
-{
-	int i;
-	double** m;
-	
-	m = new double*[n];
-	for(i=0;i<n;i++)
-	{
-		m[i] = new double[p];
-		memset(m[i],0,p*sizeof(double));
-	}
-	return(m);
-}
-
-//frees the memory for a matrix with n rows
-void freematrix(int n,double** m)
-{
-	int i;
-	
-	for(i=0;i<n;i++)
-	{
-		delete[] m[i]; m[i] = NULL;
-	}
-	delete[] m; m = NULL;
-	return;
-}
-
-//creates the copy of a matrix with n rows and p columns
-void copymatrix(int n,int p,double** source,double** dest)
-{
-	int i,j;
-	
-	for(i=0;i<n;i++)
-	{
-		for(j=0;j<p;j++)
-		{
-			dest[i][j] = source[i][j];
-		}
-	}
-	return;
-}
-
-//reads from a file a matrix with n rows and p columns
-void readmatrix(char* filename,int n,int p,double* m[])
-{
-	int i,j;
-	double s;
-	FILE* in = fopen(filename,"r");
-	
-	if(NULL==in)
-	{
-		printf("Cannot open input file [%s]\n",filename);
-		exit(1);
-	}
-	for(i=0;i<n;i++)
-	{
-		for(j=0;j<p;j++)
-		{
-			fscanf(in,"%lf",&s);
-			m[i][j] = s;
-		}
-	}
-	fclose(in);
-	return;
-}
-
 //prints the elements of a matrix in a file
-void printmatrix(char* filename,int n,int p,double** m)
+void printmatrix(char* filename,gsl_matrix* m)
 {
 	int i,j;
 	double s;
@@ -80,12 +12,13 @@ void printmatrix(char* filename,int n,int p,double** m)
 		printf("Cannot open output file [%s]\n",filename);
 		exit(1);
 	}
-	for(i=0;i<n;i++)
+	for(i=0;i<m->size1;i++)
 	{
-		fprintf(out,"%.3lf",m[i][0]);
-		for(j=1;j<p;j++)
+	        fprintf(out,"%.3lf",gsl_matrix_get(m,i,0));
+		for(j=1;j<m->size2;j++)
 		{
-			fprintf(out,"\t%.3lf",m[i][j]);
+			fprintf(out,"\t%.3lf",
+				gsl_matrix_get(m,i,j));
 		}
 		fprintf(out,"\n");
 	}
@@ -94,247 +27,239 @@ void printmatrix(char* filename,int n,int p,double** m)
 }
 
 //creates the transpose of the matrix m
-double** transposematrix(int n,int p,double** m)
+gsl_matrix* transposematrix(gsl_matrix* m)
 {
 	int i,j;
 	
-	double** tm = allocmatrix(p,n);
+	gsl_matrix* tm = gsl_matrix_alloc(m->size2,m->size1);
 	
-	for(i=0;i<p;i++)
+	for(i=0;i<tm->size1;i++)
 	{
-		for(j=0;j<n;j++)
+		for(j=0;j<tm->size2;j++)
 		{
-			tm[i][j] = m[j][i];
+		  gsl_matrix_set(tm,i,j,gsl_matrix_get(m,j,i));
 		}
 	}	
 	
 	return(tm);
 }
 
-//calculates the dot (element by element) product of two matrices m1 and m2
-//with n rows and p columns; the result is saved in m
-void dotmatrixproduct(int n,int p,double** m1,double** m2,double** m)
-{
-	int i,j;
-	
-	for(i=0;i<n;i++)
-	{
-		for(j=0;j<p;j++)
-		{
-			m[i][j] = m1[i][j]*m2[i][j];
-		}
-	}
-	
-	return;
-}
-
 //calculates the product of a nxp matrix m1 with a pxl matrix m2
 //returns a nxl matrix m
-void matrixproduct(int n,int p,int l,double** m1,double** m2,double** m)
+void matrixproduct(gsl_matrix* m1,gsl_matrix* m2,gsl_matrix* m)
 {
 	int i,j,k;
 	double s;
 	
-	for(i=0;i<n;i++)
+	for(i=0;i<m->size1;i++)
 	{
-		for(k=0;k<l;k++)
-		{
-			s = 0;
-			for(j=0;j<p;j++)
-			{
-				s += m1[i][j]*m2[j][k];
-			}
-			m[i][k] = s;
-		}
+	  for(k=0;k<m->size2;k++)
+	  {
+	    s = 0;
+	    for(j=0;j<m1->size2;j++)
+	    {
+	      s += gsl_matrix_get(m1,i,j)*gsl_matrix_get(m2,j,k);
+	    }
+	    gsl_matrix_set(m,i,k,s);
+	  }
 	}
 	return;
 }
 
-void set_mat_identity(int p, double *A)
-{
- int i;
 
- for(i = 0; i < p * p; i++) A[i] = 0;
- for(i = 0; i < p; i++) A[i * p + i] = 1;
- return;
+//computes the inverse of a positive definite matrix
+//the function returns a new matrix which contains the inverse
+//the matrix that gets inverted is not modified
+gsl_matrix* inverse(gsl_matrix* K)
+{
+	int j;
+	
+	gsl_matrix* copyK = gsl_matrix_alloc(K->size1,K->size1);
+	if(GSL_SUCCESS!=gsl_matrix_memcpy(copyK,K))
+	{
+		printf("GSL failed to copy a matrix.\n");
+		exit(1);
+	}
+	
+	gsl_matrix* inverse = gsl_matrix_alloc(K->size1,K->size1);
+	gsl_permutation *myperm = gsl_permutation_alloc(K->size1);
+	
+	if(GSL_SUCCESS!=gsl_linalg_LU_decomp(copyK,myperm,&j))
+	{
+		printf("GSL failed LU decomposition.\n");
+		exit(1);
+	}
+	if(GSL_SUCCESS!=gsl_linalg_LU_invert(copyK,myperm,inverse))
+	{
+		printf("GSL failed matrix inversion.\n");
+		exit(1);
+	}
+	gsl_permutation_free(myperm);
+	gsl_matrix_free(copyK);
+	
+	return(inverse);
 }
 
-//computes the inverse of a symmetric positive definite matrix
-void inverse(int p,double** m)
+//creates a submatrix of matrix M
+//the indices of the rows and columns to be selected are
+//specified in the last four arguments of this function
+gsl_matrix* MakeSubmatrix(gsl_matrix* M,
+			  int* IndRow,int lenIndRow,
+			  int* IndColumn,int lenIndColumn)
 {
-  int i,j,k;
-  double* m_copy = (double*)malloc((p * p) * sizeof(double));
-  double* m_inv = (double*)malloc((p * p) * sizeof(double));
-
-  k=0;
-  for(i=0;i<p;i++)
-  {
-     for(j=0;j<p;j++)
-     {
-        m_copy[k] = m[i][j];
-        k++;
-     }
-  }
-
-  set_mat_identity(p, m_inv);
-
-  //-----  Use LAPACK  -------
-  if(0!=(k=clapack_dposv(CblasRowMajor, CblasUpper, p, p, m_copy, p, m_inv, p)))
-  {
-    fprintf(stderr,"Something was wrong with clapack_dposv [%d]\n",k);
-     exit(1);
-  }
-  //--------------------------
-
-  k=0;
-  for(i=0;i<p;i++)
-  {
-     for(j=0;j<p;j++)
-     {
-        m[i][j] = m_inv[k];
-        k++;
-     }
-  }  
-
-  free(m_copy);
-  free(m_inv);
-
-  return;
+	int i,j;
+	gsl_matrix* subM = gsl_matrix_alloc(lenIndRow,lenIndColumn);
+	
+	for(i=0;i<lenIndRow;i++)
+	{
+		for(j=0;j<lenIndColumn;j++)
+		{
+			gsl_matrix_set(subM,i,j,
+                                       gsl_matrix_get(M,IndRow[i],IndColumn[j]));
+		}
+	}
+	
+	return(subM);
 }
 
 
 //computes the log of the determinant of a symmetric positive definite matrix
-double logdet(int p,double** m)
+double logdet(gsl_matrix* K)
 {
-        //just take care of the 1x1 case
-        if(1==p)
-	{
-	  return(log(m[0][0]));
-	}
+        int i;
 
-	int i,j;
-	char jobvl = 'N';
-	char jobvr = 'N';
-	int lda = p;
-	double wr[2*p];
-	double wi[2*p];
-	double vl[p][p];
-	int ldvl = p*p;
-	double vr[p][p];
-	int ldvr = p*p;
-	double work[p*p];
-	int lwork = p*p;
-	double a[p][p];
-	int info = 1;
-	
-	for(i=0;i<p;i++)
+	gsl_matrix* CopyOfK = gsl_matrix_alloc(K->size1,K->size2);
+	gsl_matrix_memcpy(CopyOfK,K);
+	gsl_permutation *myperm = gsl_permutation_alloc(K->size1);
+	if(GSL_SUCCESS!=gsl_linalg_LU_decomp(CopyOfK,myperm,&i))
 	{
-		for(j=0;j<p;j++)
-		{
-			a[i][j] = m[i][j];
-		}
-	}
-	dgeev_(&jobvl,&jobvr,&p,(double*)a,&lda,(double*)wr,(double*)wi,(double*)vl, 
-		  &ldvl,(double*)vr,&ldvr,(double*)work,&lwork,&info);
-
-	if(0!=info)
-	{
-		printf("Smth wrong in the call of 'dgeev' error is [info = %d]\n",info);
+		printf("GSL failed LU decomposition.\n");
 		exit(1);
-	}	   
-	
-	double logdet = 0;
-	for(i=0;i<p;i++) logdet+=log(wr[i]);	
+	}
+	double logdet = gsl_linalg_LU_lndet(CopyOfK);
+	gsl_permutation_free(myperm);
+	gsl_matrix_free(CopyOfK);
 	return(logdet);
 }
 
-//this returns the columns specified by the set of indices A
-//lenA is the number of indices of A
-//data is an nxp matrix
-//the returned submatrix is n x lenA
-double** submatrix(int n,int p,double** data,int lenA,int* A)
 {
-  double** result = allocmatrix(n,lenA);
+	gsl_vector* tempvec = gsl_vector_alloc(n);
+	int i;
 
-  int i,j;
-  for(i=0;i<lenA;i++)
-  {
-    for(j=0;j<n;j++)
-    {
-      result[j][i] = data[j][A[i]-1];
-    }
-  }
-
-  return(result);
+	//set the columns of the matrix.
+	for(i = 0; i < lenA; i++)
+	{
+		gsl_matrix_get_col(tempvec, fulldata, (A[i]-1));
+		gsl_matrix_set_col(subdata, i, tempvec);
+	}
+	// clean the memory
+	gsl_vector_free(tempvec);
+	return;
 }
 
-//computes the marginal likelihood
-double marglik(int n,int p,double** data,int lenA,int* A)
+gsl_matrix* create_MA(gsl_matrix* D_A)
 {
-  double result = 0.0; //value is returned by the function
-  int i;
+	int j = 0;
+	int len_A = D_A->size2;
+	int n = D_A->size1;
+	double x;
 
-  //nx1 submatrix corresponding with the response
-  int response = 1;
-  double** D1 = submatrix(n,p,data,1,&response);
+	gsl_matrix* D_A_transpose = gsl_matrix_alloc(len_A, n);
+	gsl_matrix_transpose_memcpy(D_A_transpose, D_A);
 
-  //n x lenA matrix correspoding with the regressors
-  double** DA = submatrix(n,p,data,lenA,A);
+	gsl_matrix* M_A = gsl_matrix_alloc(len_A, len_A);
 
-  //get the tranposed of DA
-  double** transpDA = transposematrix(n,lenA,DA); 
+	// Here, compute (X^T X), store in matrix MA. The function gsl_blas_dgemm
+	// is a general matrix multiplication algorithm, and is several times faster than
+	// the usual nested for-loop routine that you might use naively.
 
-  //MA is a lenA x lenA matrix
-  double** MA = allocmatrix(lenA,lenA);
-  matrixproduct(lenA,n,lenA,transpDA,DA,MA);
-  //add the identity matrix to MA
-  //i.e., increment with 1 the diagonal elements
-  for(i=0;i<lenA;i++)
-  {
-    MA[i][i] += 1;
-  }
+	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, D_A_transpose, D_A, 0.0, M_A);
+	gsl_matrix_free(D_A_transpose);
 
-  result = lgamma((n+lenA+2.0)/2.0)-lgamma((lenA+2.0)/2.0)-0.5*logdet(lenA,MA);
+	for(j = 0; j < len_A;j ++) // Add the identity matrix
+	{
+		x = gsl_matrix_get(M_A, j, j) + 1.0;
+		gsl_matrix_set(M_A, j , j , x);
+	}
 
-  //calculate 1 + t(D1) %*% D1
-  double s = 1.0;
-  for(i=0;i<n;i++)
-  {
-    s += pow(D1[i][0],2);
-  }
- 
-  //calculate t(DA) %*% D1
-  //this is a lenA x 1 matrix
-  double** transpDAD1 = allocmatrix(lenA,1);
-  matrixproduct(lenA,n,1,transpDA,D1,transpDAD1);
-
-  //calculate t(D1) %*% DA
-  //just transpose transDAD1
-  //this is a 1 x lenA matrix
-  double** transpD1DA = transposematrix(lenA,1,transpDAD1);
-
-  //get the inverse of MA
-  inverse(lenA,MA);
-
-  //need some place to store results
-  double** temp = allocmatrix(lenA,1);
-  matrixproduct(lenA,lenA,1,MA,transpDAD1,temp);
-
-  //this is the final matrix multiplication
-  for(i=0;i<lenA;i++)
-  {
-    s -= transpD1DA[0][i]*temp[i][0];
-  }
-  result -= 0.5*(n+lenA+2)*log(s);
-
-  //clean memory
-  freematrix(n,D1);
-  freematrix(n,DA);
-  freematrix(lenA,transpDA);
-  freematrix(lenA,MA);
-  freematrix(lenA,transpDAD1);
-  freematrix(1,transpD1DA);
-  freematrix(lenA,temp);
-
-  return(result);
+	return(M_A);
 }
+
+double compute_ml_matprod(gsl_vector* response, gsl_matrix* M_A, gsl_matrix* D_A)
+{
+	double matprod = 0.0;
+	int lenA = D_A->size2;
+	int n = D_A->size1;
+
+	// allocate temporary vectors for intermediate calculations
+	gsl_vector* tempvec = gsl_vector_calloc(lenA);
+	gsl_vector* tempvec2 = gsl_vector_calloc(lenA);
+	gsl_vector* tempvec3 = gsl_vector_calloc(n);
+	gsl_matrix* choldecomp = gsl_matrix_alloc(lenA, lenA);
+	gsl_matrix_memcpy(choldecomp, M_A);
+
+	// product of t(D_A) %*% D_1, stored in tempvec
+	gsl_blas_dgemv(CblasTrans, 1.0, D_A, response, 0.0, tempvec);
+
+	// next two lines, tempvec2 stores inv(MA) %*% t(D_A) %*% D_1,
+	// computed via the cholesky decomposition, since MA is pos-definite.
+	gsl_linalg_cholesky_decomp(choldecomp);
+	gsl_linalg_cholesky_solve(choldecomp, tempvec, tempvec2);
+
+	// product of D_A %*% inv(MA) %*% t(D_A) %*% D_1, which is a vector of length
+	// n, stored in tempvec3
+	gsl_blas_dgemv(CblasNoTrans, 1.0, D_A, tempvec2, 0.0, tempvec3);
+
+	// finally, t(D_1) %*% D_A %*% inv(MA) %*% t(D_A) %*% D_1
+	gsl_blas_ddot(response, tempvec3, &matprod);
+
+	gsl_matrix_free(choldecomp);
+	gsl_vector_free(tempvec);
+	gsl_vector_free(tempvec2);
+	gsl_vector_free(tempvec3);
+
+	return(matprod);
+}
+
+double marglik(gsl_matrix* data, int lenA, int* A)
+{
+	// declare variables for intermediate calculations
+	double gam_coef = 0.0;
+	double l_det = 0.0;
+	double matprod = 0.0;
+	double inner_d = 0.0;
+	double total = 0.0;
+	int n = data->size1;
+
+	// extract submatrix D_A and create the matrix M_A
+	gsl_matrix* D_A = gsl_matrix_alloc(n, lenA);
+	subset_gsl_matrix(data, D_A, n, A, lenA);
+	gsl_matrix* M_A = create_MA(D_A);
+
+	// extract response vector
+	gsl_vector* response = gsl_vector_alloc(n);
+	gsl_matrix_get_col(response, data, 0);
+
+
+	//get the log gamma piece
+	gam_coef = lgamma((n + 2.0 + lenA)/2.0) - lgamma((lenA + 2.0)/2.0);
+	
+	// get the log determinant of MA
+	l_det = logdet(M_A);
+
+	// get the inner product of the response, ie compute (y^t y)
+	gsl_blas_ddot(response, response, &inner_d);
+	
+	// compute the long matrix product
+	matprod = compute_ml_matprod(response, M_A, D_A);
+	
+	total = gam_coef - .5*l_det - ((n + lenA + 2.0)/2.0)*log(1.0 + inner_d - matprod);
+
+	// deallocate memory
+	gsl_matrix_free(D_A);
+	gsl_vector_free(response);
+	gsl_matrix_free(M_A);
+
+	return(total);
+}
+
