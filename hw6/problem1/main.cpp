@@ -58,7 +58,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	}
 
 	// Calculate determinant provided by formula
-	for(k=0; k<n; k++) 
+	for(k=0; k<n; k++) {
 
 		printf("\ni = %d", k);
 
