@@ -1,7 +1,7 @@
 #include "matrices.h"
 
 // Function to return the minor of a matrix for which we want to calculate the determinant
-// Omits the first row and the kth column
+// Omits the first (zeroth) row and the kth column
 // Input: gsl_matrix * m = nxn matrix; int n = number of rows and columns for m; 
 // int k: index of column to omit, ranges from 0 to n-1
 gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
@@ -57,11 +57,11 @@ double getDeterminant(gsl_matrix m *, int n)
 
 	}
 
-	// Define minor matrix by removing the first row and the kth column (where k ranges from 0 to n-1) from an nxn matrix m
+	// Calculate determinant provided by formula
 	for(k=0; k<n; k++) {
 
-		a = gsl_matrix_get(m, 0, k)*(-1)^(k-1);
-		
+		a = gsl_matrix_get(m, 0, k)*(-1)^(k);
+
 		minor = getMinor(m, n, k);
 
 		det += a * getDeterminant(minor, n-1);
