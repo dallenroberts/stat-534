@@ -8,8 +8,6 @@ gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
 
 	int i,j;
 
-	gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
-
 	for(i=0;i<(n-1);i++) {
 
 		printf("\ni = %d", i);
@@ -64,7 +62,9 @@ double getDeterminant(gsl_matrix * m, int n)
 
 		a = gsl_matrix_get(m, 0, k)*pow(-1, (double)k);
 
-		minor = getMinor(m, n, k);
+		gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
+		
+		minor = getMinor(minor, n, k);
 
 		// det += a * getDeterminant(minor, n-1);
 
