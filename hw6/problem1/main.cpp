@@ -10,7 +10,7 @@ double getDeterminant(int n)
 
 	gsl_matrix_fread(f, m);
 
-	return(1)
+	return(1);
 
 }
 
@@ -23,8 +23,7 @@ int main()
 
 	det = getDeterminant(n);
 
-	printf("The determinant of the matrix is: %.4lf\n",
-               det);
+	printf("The determinant of the matrix is: %.4lf\n", det);
 
 	return(1);
 }
