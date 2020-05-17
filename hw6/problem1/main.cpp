@@ -35,20 +35,15 @@ gsl_matrix * getMinor(gsl_matrix * m, int n, int k) {
 
 }
 
-double getDeterminant(int n)
+double getDeterminant(gsl_matrix m *, int n)
 {
 
-	double det;
+	double a;
+	double det = 0;
 	int k;
 	gsl_matrix * minor;
 
 	printf("Hello (matrix) world.\n");
-
-	// Read in banded matrix
-	gsl_matrix * m = gsl_matrix_alloc(n, n);
-	FILE * f = fopen("mybandedmatrix.txt", "r");
-	gsl_matrix_fscanf(f, m);
-	fclose(f);
 
 	// Edge cases
 	if(n == 1) {
@@ -63,13 +58,21 @@ double getDeterminant(int n)
 	}
 
 	// Define minor matrix by removing the first row and the kth column (where k ranges from 0 to n-1) from an nxn matrix m
-	k = 3;
+	for(k=0; k<n; k++) {
 
-	minor = getMinor(m, n, k);
-	
-	printmatrix("minor.mat", minor);
+		a = gsl_matrix_get(m, 0, k)*(-1)^(k-1);
+		
+		minor = getMinor(m, n, k);
 
-	return(5);
+		det += a * getDeterminant(minor, n-1);
+
+		gsl_matrix_free(minor);
+
+	}
+
+	gsl_matrix_free(m);
+
+	return(det);
 
 }
 
@@ -81,7 +84,13 @@ int main()
 	int n = 10;
 	double det;
 
-	det = getDeterminant(n);
+	// Read in banded matrix
+	gsl_matrix * m = gsl_matrix_alloc(n, n);
+	FILE * f = fopen("mybandedmatrix.txt", "r");
+	gsl_matrix_fscanf(f, m);
+	fclose(f);
+
+	det = getDeterminant(m, n);
 
 	printf("The determinant of the matrix is: %.4lf\n", det);
 
