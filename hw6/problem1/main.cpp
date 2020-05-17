@@ -60,7 +60,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	// Calculate determinant provided by formula
 	for(k=0; k<n; k++) {
 
-		printf("\ni = %d", k);
+		printf("\nk = %d", k);
 
 		a = gsl_matrix_get(m, 0, k)*pow(-1, (double)k);
 
@@ -68,7 +68,7 @@ double getDeterminant(gsl_matrix * m, int n)
 
 		det += a * getDeterminant(minor, n-1);
 
-		// gsl_matrix_free(minor);
+		gsl_matrix_free(minor);
 
 	}
 
