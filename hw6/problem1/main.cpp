@@ -40,6 +40,7 @@ double getDeterminant(int n)
 
 	double det;
 	int k;
+	gsl_matrix * minor;
 
 	printf("Hello (matrix) world.\n");
 
