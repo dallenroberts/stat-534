@@ -66,9 +66,9 @@ double getDeterminant(gsl_matrix * m, int n)
 
 		gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
 		setMinor(m, n, k, minor);
-		gsl_matrix_free(minor);
 
 		det += a * getDeterminant(minor, n-1);
+		gsl_matrix_free(minor);
 
 		// det += a * 10;
 
