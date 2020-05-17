@@ -57,8 +57,6 @@ double getDeterminant(gsl_matrix * m, int n)
 
 	}
 
-	gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
-
 	// Calculate determinant provided by formula
 	for(k=0; k<n; k++) {
 
@@ -66,7 +64,9 @@ double getDeterminant(gsl_matrix * m, int n)
 
 		a = gsl_matrix_get(m, 0, k)*pow(-1, (double)k);
 
+		gsl_matrix * minor = gsl_matrix_alloc(n-1, n-1);
 		setMinor(m, n, k, minor);
+		gsl_matrix_free(minor);
 
 		det += a * getDeterminant(minor, n-1);
 
@@ -74,7 +74,6 @@ double getDeterminant(gsl_matrix * m, int n)
 
 	}
 
-	gsl_matrix_free(minor);
 	gsl_matrix_free(m);
 
 	return(det);
