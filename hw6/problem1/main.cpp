@@ -14,7 +14,7 @@ double getDeterminant(int nrow)
 	gsl_matrix_fscanf(f, m);
 	fclose(f);
 
-	n = 1;
+	n = 2;
 
 	// Edge cases
 	if(n == 1) {
