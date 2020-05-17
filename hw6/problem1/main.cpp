@@ -8,7 +8,7 @@ double getDeterminant(int n)
 	gsl_matrix * m = gsl_matrix_alloc(n, n);
 	FILE * f = fopen("mybandedmatrix.txt", "r");
 
-	gsl_matrix_fread(FILE * stream, gsl_matrix * m)
+	gsl_matrix_fread(f, m);
 
 	return(1)
 
