@@ -38,7 +38,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	double det = 0;
 	int k;
 
-	printf("\nHello (matrix) world.\n");
+	printf("\n\nHello (matrix) world.\n");
 	printf("n = %d \n", n);
 
 	// Edge cases
@@ -49,7 +49,7 @@ double getDeterminant(gsl_matrix * m, int n)
 	}
 	if(n == 2) {
 
-		printf("!!!!!");
+		printf("!!!!!\n");
 
 		return(gsl_matrix_get(m,0,0)*gsl_matrix_get(m,1,1) - gsl_matrix_get(m,0,1)*gsl_matrix_get(m,1,0));
 
