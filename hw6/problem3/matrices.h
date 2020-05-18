@@ -3,9 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
-// extern "C" {
-// #include <clapack.h>
-// }
+extern "C" {
+#include <clapack.h>
+}
 
 extern "C" {
  void dpotri_(char*,int*,double*,int*,int*);
