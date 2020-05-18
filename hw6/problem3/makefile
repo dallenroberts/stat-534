@@ -1,6 +1,6 @@
-REGRESSIONS_LSTDFLG = -lstdc++ -llapack -lcblas -lm
-REGRESSIONS_INCLUDE = -I/usr/include/
-REGRESSIONS_LIB = -L/usr/lib/atlas/
+REGRESSIONS_LSTDFLG = -lstdc++ -llapack -llapack_atlas -lcblas -lm
+REGRESSIONS_INCLUDE = -I/usr/include/ -I/usr/include/atlas/
+REGRESSIONS_LIB = -L/usr/lib/atlas/ -L/usr/lib/atlas-base/
 REGRESSIONS_OBJS = regressions
 
 all:	${REGRESSIONS_OBJS}
