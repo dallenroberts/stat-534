@@ -1,6 +1,6 @@
-REGRESSIONS_LSTDFLG = -lstdc++ -llapack -llapack_atlas -lcblas -lm
-REGRESSIONS_INCLUDE = -I/usr/include/ -I/usr/include/atlas/
-REGRESSIONS_LIB = -L/usr/lib/atlas/ -L/usr/lib/atlas-base/
+REGRESSIONS_LSTDFLG = -lstdc++ -llapack -lcblas -lm
+REGRESSIONS_INCLUDE = -I/usr/include/
+REGRESSIONS_LIB = -L/usr/lib/atlas/
 REGRESSIONS_OBJS = regressions
 
 all:	${REGRESSIONS_OBJS}
@@ -13,7 +13,7 @@ regmodels.o: regmodels.cpp regmodels.h
 	gcc -g -c regmodels.cpp -o regmodels.o ${REGRESSIONS_INCLUDE}
 
 main.o: main.cpp matrices.h
-	gcc -g -c main.cpp -o main.o ${REGRESSIONS_INCLUDE}
+	gcc -g -c main.cpp -o main.o
 
 regressions: main.o matrices.o regmodels.o
 	gcc main.o regmodels.o matrices.o -o regressions ${REGRESSIONS_LIB} ${REGRESSIONS_LSTDFLG}
