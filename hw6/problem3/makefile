@@ -12,8 +12,8 @@ matrices.o: matrices.cpp matrices.h
 regmodels.o: regmodels.cpp regmodels.h
 	gcc -g -c regmodels.cpp -o regmodels.o ${REGRESSIONS_INCLUDE}
 
-main.o: main.cpp matrices.h ${REGRESSIONS_INCLUDE}
-	gcc -g -c main.cpp -o main.o
+main.o: main.cpp matrices.h 
+	gcc -g -c main.cpp -o main.o ${REGRESSIONS_INCLUDE}
 
 regressions: main.o matrices.o regmodels.o
 	gcc main.o regmodels.o matrices.o -o regressions ${REGRESSIONS_LIB} ${REGRESSIONS_LSTDFLG}
