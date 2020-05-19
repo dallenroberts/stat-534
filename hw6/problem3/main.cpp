@@ -65,7 +65,7 @@ int main()
   //   }
 
   // }
-
+        lenA = 2;
         A[0] = 5;
         A[1] = 10;
         AddRegression(nMaxRegs, regressions,
