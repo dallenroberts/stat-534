@@ -65,12 +65,6 @@ int main()
     }
 
   }
-        // lenA = 2;
-        // A[0] = 2;
-        // A[1] = 3;
-        // AddRegression(nMaxRegs, regressions,
-        //   lenA, A, 
-        //   marglik(n,p,data,lenA,(int*)A));
 
   //save the list in a file
   SaveRegressions(outputfilename,regressions);
