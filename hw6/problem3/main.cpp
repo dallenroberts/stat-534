@@ -44,6 +44,26 @@ int main()
       marglik(n,p,data,lenA,(int*)A));
   }
 
+  //add the regressions with two predictors
+  lenA = 2;
+  for(i = 1; i<p; i++) {
+    for(j = 1; j<p; j++]) {
+      if(i != j) {
+
+        A[0] = i+1;
+        A[1] = j+1;
+        AddRegression(nMaxRegs, regressions,
+          lenA, A, 
+          marglik(n,p,data,lenA,(int*)A));
+        
+      }
+
+    }
+
+  }
+
+
+
   //save the list in a file
   SaveRegressions(outputfilename,regressions);
 
