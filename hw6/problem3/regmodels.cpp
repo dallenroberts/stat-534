@@ -1,3 +1,8 @@
+// Allen Roberts
+// May 19, 2020
+// STAT 534
+// Homework 6, Problems 2 and 3
+
 /*
  FILE: REGMODELS.CPP
 */
@@ -87,8 +92,17 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   p->Next = newp;
   newp->Next = pnext;
 
-  // FIXME - make dependent on number of regressors
-  printf("inserted [%d]\n",A[0]);
+  for(i=0;i<lenA;i++){
+
+      if(i==0) {
+        printf("inserted [%d]",A[i]);
+      } else{
+        printf(", [%d]",A[i]);
+      }
+
+  }
+
+  print("\n");
 
   // Determine the length of the list of regressions
   p = regressions;

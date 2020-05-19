@@ -1,3 +1,8 @@
+// Allen Roberts
+// May 19, 2020
+// STAT 534
+// Homework 6, Problems 2 and 3
+
 /*
  FILE: MAIN.CPP
 
@@ -50,11 +55,8 @@ int main()
         AddRegression(nMaxRegs, regressions,
           lenA, A, 
           marglik(n,p,data,lenA,(int*)A));
-
       }
-
     }
-
   }
 
   //save the list in a file
