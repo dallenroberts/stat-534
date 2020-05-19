@@ -1,0 +1,103 @@
+Allen Roberts
+May 19, 2020
+Stat 534
+Homework 6
+
+
+## Problem 2 ##
+The updated AddRegressions function is copied at the bottom of this file. To summarize, I first determine the length of the regressions list. If it is greater then 10, I run the DeleteLastRegression function (length List - nMaxRegs) times to remove regressions at the end of the list (in other words, with the lowest marginal likelihood) until only the 10 with the largest marginal likelihoods remain.
+
+## Problem 3 ##
+The 10 best regressions are saved in the "best10regressions.txt" file. All have 2 predictors, and all have the second column (the first predictor), which is the predictor that results in the highest marginal likelihood in the single predictor case. In order to implement the 2 predictor model, I had to modify the logdet() function, since the call to dgeev() returned an error having to do with the LWORK parameter. This error only occurred for regressions with 2 predictors; when I added more predictors, the log determinant was returned correctly. I modified the log determinant function such that if the number of predictors was 2, I calculated the log determinant as log(a(1,1)*a(2,2) - a(1,2)*a(2,1)). While taking the log of the determinant is potentially problematic given the issues around determinant calculations discussed previously, it is unlikely to cause trouble when the matrix is only 2x2.
+
+//this function adds a new regression with predictors A
+//to the list of regressions. Here "regressions" represents
+//the head of the list, "lenA" is the number of predictors
+//and "logmarglikA" is the marginal likelihood of the regression
+//with predictors A
+void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double logmarglikA)
+{
+  int i;
+  LPRegression p = regressions;
+  LPRegression pnext = p->Next;
+
+  int l; // counter for list length
+
+  // printf("\nMaximum number of regressions: %d", nMaxRegs);
+
+  while(NULL!=pnext)
+  {
+     //return if we have previously found this regression
+     if(sameregression(lenA,A,pnext->lenA,pnext->A))
+     {
+        return;
+     }
+
+     //go to the next element in the list if the current
+     //regression has a larger log marginal likelihood than
+     //the new regression A
+     if(pnext->logmarglikA>logmarglikA)
+     {
+        p = pnext;
+        pnext = p->Next;
+     }
+     else //otherwise stop; this is where we insert the new regression
+     {
+        break;
+     }
+  }
+
+  //create a new element of the list
+  LPRegression newp = new Regression;
+  newp->lenA = lenA;
+  newp->logmarglikA = logmarglikA;
+  newp->A = new int[lenA];
+  
+  //copy the predictors
+  for(i=0;i<lenA;i++)
+  {
+    newp->A[i] = A[i];
+  }
+
+  //insert the new element in the list
+  p->Next = newp;
+  newp->Next = pnext;
+
+  for(i=0;i<lenA;i++){
+
+      if(i==0) {
+        printf("inserted [%d]",A[i]);
+      } else{
+        printf(", [%d]",A[i]);
+      }
+
+  }
+
+  printf("\n");
+
+  // Determine the length of the list of regressions
+  p = regressions;
+  pnext = p->Next;
+
+  l = 0;
+  while(NULL != pnext) {
+
+    l += 1;
+    p = pnext;
+    pnext = p->Next;
+
+  }
+
+  // Delete the last regressions until only nMaxRegs regressions remain
+  if(l > nMaxRegs) {
+
+    for(i=0;i<(l-nMaxRegs);i++) {
+
+      DeleteLastRegression(regressions);
+
+    }
+
+  }
+
+  return;
+}

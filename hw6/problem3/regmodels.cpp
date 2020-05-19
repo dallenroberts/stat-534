@@ -117,10 +117,10 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
 
   }
 
-  // Delete the last regressions until only ten regressions remain
-  if(l > 10) {
+  // Delete the last regressions until only nMaxRegs regressions remain
+  if(l > nMaxRegs) {
 
-    for(i=0;i<(l-10);i++) {
+    for(i=0;i<(l-nMaxRegs);i++) {
 
       DeleteLastRegression(regressions);
 
