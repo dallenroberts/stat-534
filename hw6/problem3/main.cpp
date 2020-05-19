@@ -44,7 +44,7 @@ int main()
       marglik(n,p,data,lenA,(int*)A));
   }
 
-  add the regressions with two predictors
+  // add the regressions with two predictors
   lenA = 2;
   for(i = 1; i<p; i++) {
     printf("\ni= %d", i);
