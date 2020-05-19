@@ -102,7 +102,7 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
 
   }
 
-  print("\n");
+  printf("\n");
 
   // Determine the length of the list of regressions
   p = regressions;
