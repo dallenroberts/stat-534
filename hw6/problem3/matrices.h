@@ -28,4 +28,3 @@ double logdet(int p,double** m);
 //functions related to HW2
 double** submatrix(int n,int p,double** data,int lenA,int* A);
 double marglik(int n,int p,double** data,int lenA,int* A);
-void subsetDataMatrix(double** fulldata, double** subdata, int npred, int nrow, int* vars);
