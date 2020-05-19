@@ -16,7 +16,7 @@ int main()
   int n = 158; //sample size
   int p = 51; //number of variables
   char datafilename[] = "erdata.txt"; //name of the data file
-  char outputfilename[] = "regressions1-2.txt";
+  char outputfilename[] = "best10regressions.txt";
 
   int nMaxRegs = 10; // Maximum number of regressions to keep track of
 

@@ -121,7 +121,26 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
 // remark that the head is not touched
 void DeleteFirstRegression(LPRegression regressions) {
 
-  printf("Insert code here to delete the first regression");
+  //this is the first regression
+  LPRegression p1 = regressions->Next;
+
+  //if the list does not have any elements, return
+  if(NULL==p1) {
+     return;
+  }
+
+  // This is the second regression
+  LPRegression p2 = p1->Next;
+
+  // Make the head point to the second regression
+  regressions->Next = p2;
+
+  // Delete the first regression
+  delete[] p1->A;
+  p1->Next = NULL;
+  delete p1;
+
+  // printf("Insert code here to delete the first regression");
 
   return;
 }
