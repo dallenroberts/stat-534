@@ -47,7 +47,7 @@ int main()
   //add the regressions with two predictors
   lenA = 2;
   for(i = 1; i<p; i++) {
-    for(j = 1; j<p; j++]) {
+    for(j = 1; j<p; j++) {
       if(i != j) {
 
         A[0] = i+1;
@@ -55,7 +55,7 @@ int main()
         AddRegression(nMaxRegs, regressions,
           lenA, A, 
           marglik(n,p,data,lenA,(int*)A));
-        
+
       }
 
     }
