@@ -211,11 +211,11 @@ double logdet(int p,double** m)
 	// printf("p=%d", p);
 	// printmatrix("testmat.mat", p, p, m);
 
-        //just take care of the 1x1 case
- //        if(1==p)
-	// {
-	//   return(log(m[0][0]));
-	// }
+    //just take care of the 1x1 case
+        if(1==p)
+	{
+	  return(log(m[0][0]));
+	}
 
 	// Also take care of the 2x2 case, since dgeev throws an error
 	// for all of the 2x2 matrices I've tried
