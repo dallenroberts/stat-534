@@ -87,6 +87,7 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   p->Next = newp;
   newp->Next = pnext;
 
+  // FIXME - make dependent on number of regressors
   printf("inserted [%d]\n",A[0]);
 
   // Determine the length of the list of regressions
