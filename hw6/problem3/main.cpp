@@ -66,9 +66,9 @@ int main()
 
   // }
         lenA = 3;
-        A[0] = 5;
-        A[1] = 10;
-        A[2] = 15;
+        A[0] = 2;
+        A[1] = 3;
+        A[2] = 4;
         AddRegression(nMaxRegs, regressions,
           lenA, A, 
           marglik(n,p,data,lenA,(int*)A));
