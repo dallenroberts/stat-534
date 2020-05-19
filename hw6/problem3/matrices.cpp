@@ -281,7 +281,7 @@ double marglik(int n,int p,double** data,int lenA,int* A)
   printf("\nA = ");
   for(k = 0; k < lenA; k++) {
 
-  	printf("%d, ", A[j]);
+  	printf("%d, ", A[k]);
 
   }
 
