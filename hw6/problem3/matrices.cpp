@@ -206,6 +206,11 @@ void inverse(int p,double** m)
 //computes the log of the determinant of a symmetric positive definite matrix
 double logdet(int p,double** m)
 {
+
+	printf("/nInside logdet function:\n");
+	printf("p=%d", p);
+	printmatrix("testmat.mat", p, p, m);
+
         //just take care of the 1x1 case
         if(1==p)
 	{
@@ -272,18 +277,18 @@ double** submatrix(int n,int p,double** data,int lenA,int* A)
 double marglik(int n,int p,double** data,int lenA,int* A)
 {
   
-  printf("\nInside marglik function:");
-  printf("\nn = %d", n);
-  printf("\np = %d", p);
-  printf("\nlenA = %d", lenA);
+  // printf("\nInside marglik function:");
+  // printf("\nn = %d", n);
+  // printf("\np = %d", p);
+  // printf("\nlenA = %d", lenA);
 
-  int k;
-  printf("\nA = ");
-  for(k = 0; k < lenA; k++) {
+  // int k;
+  // printf("\nA = ");
+  // for(k = 0; k < lenA; k++) {
 
-  	printf("%d, ", A[k]);
+  // 	printf("%d, ", A[k]);
 
-  }
+  // }
 
   double result = 0.0; //value is returned by the function
   int i;
