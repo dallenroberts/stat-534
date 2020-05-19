@@ -29,5 +29,6 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
 void DeleteAllRegressions(LPRegression regressions);
 void DeleteLastRegression(LPRegression regressions);
 void SaveRegressions(char* filename,LPRegression regressions);
+void DeleteFirstRegression(LPRegression regressions);
 
 #endif

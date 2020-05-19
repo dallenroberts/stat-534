@@ -45,8 +45,9 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   LPRegression p = regressions;
   LPRegression pnext = p->Next;
 
-  printf("\nMaximum number of regressions: %d", nMaxRegs);
-  
+  int l; // counter for list length
+
+  // printf("\nMaximum number of regressions: %d", nMaxRegs);
 
   while(NULL!=pnext)
   {
@@ -87,6 +88,40 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   newp->Next = pnext;
 
   printf("inserted [%d]\n",A[0]);
+
+  // Determine the length of the list of regressions
+  LPRegression p = regressions;
+  LPRegression pnext = p->Next;
+
+  int l = 0;
+  while(NULL != pnext) {
+
+    l += 1;
+    p = pnext;
+    pnext = p->Next;
+
+  }
+
+  // Delete the first regressions until only ten regressions remain
+  if(l > 10) {
+
+    for(i=0;i<(l-10);i++) {
+
+      DeleteFirstRegression(regressions);
+
+    }
+
+  }
+
+  return;
+}
+
+// this function deletes the first element of the list
+// with the head "regressions"
+// remark that the head is not touched
+void DeleteFirstRegression(LPRegression regressions) {
+
+  printf("Insert code here to delete the first regression");
 
   return;
 }
