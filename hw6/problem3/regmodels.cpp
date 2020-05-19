@@ -39,11 +39,14 @@ int sameregression(int lenA1,int* A1,int lenA2,int* A2)
 //the head of the list, "lenA" is the number of predictors
 //and "logmarglikA" is the marginal likelihood of the regression
 //with predictors A
-void AddRegression(LPRegression regressions,int lenA,int* A,double logmarglikA)
+void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double logmarglikA)
 {
   int i;
   LPRegression p = regressions;
   LPRegression pnext = p->Next;
+
+  printf("\nMaximum number of regressions: %d", nMaxRegs);
+  
 
   while(NULL!=pnext)
   {

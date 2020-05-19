@@ -18,6 +18,8 @@ int main()
   char datafilename[] = "erdata.txt"; //name of the data file
   char outputfilename[] = "regressions1-2.txt";
 
+  int nMaxRegs = 10; // Maximum number of regressions to keep track of
+
   //allocate the data matrix
   double** data = allocmatrix(n,p);
 
@@ -37,7 +39,7 @@ int main()
   for(i=1;i<p;i++)
   {
     A[0] = i+1;
-    AddRegression(regressions,
+    AddRegression(nMaxRegs, regressions,
                   lenA, A,
                   marglik(n,p,data,lenA,(int*)A));
   }
