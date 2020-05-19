@@ -49,7 +49,7 @@ int main()
 
     for(j = 1; j<p; j++) {
       // add the regressions with two predictors
-      if(j > a) {
+      if(j > i) {
         lenA = 2;
         A[1] = j+1;
         AddRegression(nMaxRegs, regressions,
