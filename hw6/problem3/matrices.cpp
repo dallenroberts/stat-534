@@ -217,6 +217,13 @@ double logdet(int p,double** m)
 	  return(log(m[0][0]));
 	}
 
+	// Also take care of the 2x2 case, since dgeev throws an error
+	// for all of the 2x2 matrices I've tried
+	if(p==2) {
+
+		return(log(m[0][0]*m[1][1]-m[0][1]*m[1][0]));
+	}
+
 	int i,j;
 	char jobvl = 'N';
 	char jobvr = 'N';
