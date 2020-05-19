@@ -35,14 +35,14 @@ int main()
   int lenA = -1; //number of indices
   
   //add the regressions with one predictor
-  lenA = 1;
-  for(i=1;i<p;i++)
-  {
-    A[0] = i+1;
-    AddRegression(nMaxRegs, regressions,
-      lenA, A, 
-      marglik(n,p,data,lenA,(int*)A));
-  }
+  // lenA = 1;
+  // for(i=1;i<p;i++)
+  // {
+  //   A[0] = i+1;
+  //   AddRegression(nMaxRegs, regressions,
+  //     lenA, A, 
+  //     marglik(n,p,data,lenA,(int*)A));
+  // }
 
   //add the regressions with two predictors
   lenA = 2;
@@ -63,8 +63,6 @@ int main()
     }
 
   }
-
-
 
   //save the list in a file
   SaveRegressions(outputfilename,regressions);
