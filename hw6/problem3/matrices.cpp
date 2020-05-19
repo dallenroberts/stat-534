@@ -268,93 +268,87 @@ double** submatrix(int n,int p,double** data,int lenA,int* A)
   return(result);
 }
 
-void subsetDataMatrix(double** fulldata, double** subdata, int npred, int nrow, int* vars)
-{
-	int i,j;
-	for(i = 0; i < npred; i++)
-	{
-		for(j = 0; j < nrow; j++)
-		{
-			subdata[j][i] = fulldata[j][(vars[i] - 1)]; //copy the predictor variables
-		}
-	}
-	return;
-}
-
 //computes the marginal likelihood
 double marglik(int n,int p,double** data,int lenA,int* A)
 {
   
-  	double** D_A = allocmatrix(n, lenA);
-	double** response = allocmatrix(n,1);
+  printf("\nInside marglik function:");
+  printf("\nn = %d", n);
+  printf("\np = %d", p);
+  printf("\nlenA = %d", lenA);
 
-	int i,j,k;
+  int k;
+  printf("\nA = ");
+  for(k = 0; k < lenA; k++) {
 
-	subsetDataMatrix(data, D_A, lenA, n, A);
+  	printf("%d, ", A[k]);
 
-	// fill the response "matrix"
-	for(i = 0; i < n; i++)
-	{
-		response[i][0] = data[i][0];
-	}
+  }
 
-	double** D_A_transpose = transposematrix(n, lenA, D_A);
-	double** response_transpose = transposematrix(n, 1, response);
+  double result = 0.0; //value is returned by the function
+  int i;
 
-	double gam_coef;
-	double l_det;
-	double matprod;
-	double inner_d = 0.0;
-	double total;
+  //nx1 submatrix corresponding with the response
+  int response = 1;
+  double** D1 = submatrix(n,p,data,1,&response);
 
-	//get the funky log gamma piece
-	gam_coef = lgamma(((double)n + 2.0 + (double)lenA)/2.0) - lgamma(((double)lenA + 2.0)/2.0);
+  //n x lenA matrix correspoding with the regressors
+  double** DA = submatrix(n,p,data,lenA,A);
 
-	double** M_A = allocmatrix(lenA, lenA);
-	matrixproduct(lenA, n, lenA, D_A_transpose, D_A, M_A);
+  //get the tranposed of DA
+  double** transpDA = transposematrix(n,lenA,DA); 
 
-	for(j = 0; j < lenA;j ++) // Add the identity matrix
-	{
-		M_A[j][j] += 1;
-	}
+  //MA is a lenA x lenA matrix
+  double** MA = allocmatrix(lenA,lenA);
+  matrixproduct(lenA,n,lenA,transpDA,DA,MA);
+  //add the identity matrix to MA
+  //i.e., increment with 1 the diagonal elements
+  for(i=0;i<lenA;i++)
+  {
+    MA[i][i] += 1;
+  }
 
-	l_det = logdet(lenA, M_A);
+  result = lgamma((n+lenA+2.0)/2.0)-lgamma((lenA+2.0)/2.0)-0.5*logdet(lenA,MA);
 
-	inverse(lenA, M_A); // invert MA. MA will be destroyed, but we don't need it anymore.
+  //calculate 1 + t(D1) %*% D1
+  double s = 1.0;
+  for(i=0;i<n;i++)
+  {
+    s += pow(D1[i][0],2);
+  }
+ 
+  //calculate t(DA) %*% D1
+  //this is a lenA x 1 matrix
+  double** transpDAD1 = allocmatrix(lenA,1);
+  matrixproduct(lenA,n,1,transpDA,D1,transpDAD1);
 
-	// get the inner product of the response
-	for(k = 0; k < n; k++)
-	{
-		inner_d += response[k][0]*response[k][0];
-	}
+  //calculate t(D1) %*% DA
+  //just transpose transDAD1
+  //this is a 1 x lenA matrix
+  double** transpD1DA = transposematrix(lenA,1,transpDAD1);
 
-	// matrices for intermediate calculations
-	double** work1 = allocmatrix(1,lenA);
-	double** work2 = allocmatrix(1,lenA);
-	double** work3 = allocmatrix(1, n);
-	double** work4 = allocmatrix(1,1);
+  //get the inverse of MA
+  inverse(lenA,MA);
 
-	// incrememntally compute t(D_1)%*%(D_A)%*%inv(M_A)%*%t(D_A)%*%D_1
-	matrixproduct(1, n, lenA, response_transpose, D_A, work1);
-	matrixproduct(1, lenA, lenA, work1, M_A, work2);
-	matrixproduct(1, lenA, n, work2, D_A_transpose, work3);
-	matrixproduct(1, n, 1, work3, response, work4);
+  //need some place to store results
+  double** temp = allocmatrix(lenA,1);
+  matrixproduct(lenA,lenA,1,MA,transpDAD1,temp);
 
-	// technically work4 is a 1x1 matrix, we need to extract its element.
-	matprod = work4[0][0];
+  //this is the final matrix multiplication
+  for(i=0;i<lenA;i++)
+  {
+    s -= transpD1DA[0][i]*temp[i][0];
+  }
+  result -= 0.5*(n+lenA+2)*log(s);
 
-	total = gam_coef - .5*l_det - ((n + lenA + 2.0)/2.0)*log(1.0 + inner_d - matprod);
+  //clean memory
+  freematrix(n,D1);
+  freematrix(n,DA);
+  freematrix(lenA,transpDA);
+  freematrix(lenA,MA);
+  freematrix(lenA,transpDAD1);
+  freematrix(1,transpD1DA);
+  freematrix(lenA,temp);
 
-	// delete matrices from memory
-	freematrix(n, D_A);
-	freematrix(n, response);
-	freematrix(lenA, D_A_transpose);
-	freematrix(1, response_transpose);
-	freematrix(lenA, M_A);
-	freematrix(1, work1);
-	freematrix(1, work2);
-	freematrix(1, work3);
-	freematrix(1, work4);
-
-	return(total);
+  return(result);
 }
