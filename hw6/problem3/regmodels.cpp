@@ -74,10 +74,7 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   //create a new element of the list
   LPRegression newp = new Regression;
   newp->lenA = lenA;
-
-  printf("About to calculate logmarglikA");
   newp->logmarglikA = logmarglikA;
-  printf("Calculated logmarglikA");
   newp->A = new int[lenA];
   
   //copy the predictors

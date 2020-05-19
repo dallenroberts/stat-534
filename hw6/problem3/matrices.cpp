@@ -271,6 +271,20 @@ double** submatrix(int n,int p,double** data,int lenA,int* A)
 //computes the marginal likelihood
 double marglik(int n,int p,double** data,int lenA,int* A)
 {
+  
+  printf("\nInside marglik function:");
+  printf("\nn = %d", n);
+  printf("\np = %d", p);
+  printf("\nlenA = %d", lenA);
+
+  int k;
+  printf("\nA = ");
+  for(k = 0; k < lenA; k++) {
+
+  	printf("%d, ", A[j]);
+
+  }
+
   double result = 0.0; //value is returned by the function
   int i;
 
