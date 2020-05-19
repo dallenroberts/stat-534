@@ -268,6 +268,19 @@ double** submatrix(int n,int p,double** data,int lenA,int* A)
   return(result);
 }
 
+void subsetDataMatrix(double** fulldata, double** subdata, int npred, int nrow, int* vars)
+{
+	int i,j;
+	for(i = 0; i < npred; i++)
+	{
+		for(j = 0; j < nrow; j++)
+		{
+			subdata[j][i] = fulldata[j][(vars[i] - 1)]; //copy the predictor variables
+		}
+	}
+	return;
+}
+
 //computes the marginal likelihood
 double marglik(int n,int p,double** data,int lenA,int* A)
 {
