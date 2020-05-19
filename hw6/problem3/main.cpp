@@ -35,19 +35,21 @@ int main()
   int lenA = -1; //number of indices
   
   //add the regressions with one predictor
-  // lenA = 1;
-  // for(i=1;i<p;i++)
-  // {
-  //   A[0] = i+1;
-  //   AddRegression(nMaxRegs, regressions,
-  //     lenA, A, 
-  //     marglik(n,p,data,lenA,(int*)A));
-  // }
+  lenA = 1;
+  for(i=1;i<p;i++)
+  {
+    A[0] = i+1;
+    AddRegression(nMaxRegs, regressions,
+      lenA, A, 
+      marglik(n,p,data,lenA,(int*)A));
+  }
 
   //add the regressions with two predictors
   lenA = 2;
   for(i = 1; i<p; i++) {
+    printf("\ni= %d", i);
     for(j = 1; j<p; j++) {
+      printf("\nj= %d", j);
       if(i != j) {
 
         printf("Made it to the 2 regressions page");
