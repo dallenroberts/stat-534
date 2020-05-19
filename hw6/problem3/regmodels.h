@@ -25,7 +25,7 @@ struct myRegression
   LPRegression Next; //link to the next regression
 };
 
-void AddRegression(LPRegression regressions,int lenA,int* A,double logmarglikA);
+void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double logmarglikA);
 void DeleteAllRegressions(LPRegression regressions);
 void DeleteLastRegression(LPRegression regressions);
 void SaveRegressions(char* filename,LPRegression regressions);
