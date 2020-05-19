@@ -90,10 +90,10 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   printf("inserted [%d]\n",A[0]);
 
   // Determine the length of the list of regressions
-  LPRegression p = regressions;
-  LPRegression pnext = p->Next;
+  p = regressions;
+  pnext = p->Next;
 
-  int l = 0;
+  l = 0;
   while(NULL != pnext) {
 
     l += 1;
