@@ -50,6 +50,8 @@ int main()
     for(j = 1; j<p; j++) {
       if(i != j) {
 
+        printf("Made it to the 2 regressions page");
+
         A[0] = i+1;
         A[1] = j+1;
         AddRegression(nMaxRegs, regressions,
