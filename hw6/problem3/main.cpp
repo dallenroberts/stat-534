@@ -47,12 +47,10 @@ int main()
   // add the regressions with two predictors
   lenA = 2;
   for(i = 1; i<p; i++) {
-    printf("\ni= %d", i);
+    // printf("\ni= %d", i);
     for(j = 1; j<p; j++) {
-      printf("\nj= %d", j);
+      // printf("\nj= %d", j);
       if(i != j) {
-
-        printf("Made it to the 2 regressions page");
 
         A[0] = i+1;
         A[1] = j+1;
