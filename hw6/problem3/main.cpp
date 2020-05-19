@@ -39,9 +39,7 @@ int main()
   for(i=1;i<p;i++)
   {
     A[0] = i+1;
-    AddRegression(nMaxRegs, regressions,
-                  lenA, A,
-                  marglik(n,p,data,lenA,(int*)A));
+    AddRegression(nMaxRegs, regressions,lenA, A, marglik(n,p,data,lenA,(int*)A));
   }
 
   //save the list in a file
