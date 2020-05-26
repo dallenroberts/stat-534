@@ -37,7 +37,7 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
 gsl_matrix* makeCholesky(gsl_matrix* K) {
 
-	gsl_matrix* copyK = gsl_matrix_alloc(K->size1,K->size1);
+	gsl_matrix* copyK = gsl_matrix_alloc(K->size1,K->size2);
 	if(GSL_SUCCESS!=gsl_matrix_memcpy(copyK,K)) {
 		printf("GSL failed to copy a matrix.\n");
 		exit(1);
@@ -79,7 +79,7 @@ int main() {
 	gsl_matrix* covX = gsl_matrix_alloc(p, p);
 	makeCovariance(covX,X);
 
-	printmatrix("covmat.mat",X);
+	printmatrix("covmat.mat",covX);
 	
 	// Problem 2
 	// Calculate Cholesky decomposition
@@ -95,6 +95,7 @@ int main() {
 	// Free memory
 	gsl_matrix_free(X);
 	gsl_matrix_free(covX);
+	gsl_matrix_free(C);
   	gsl_rng_free(r);
 	
   	return(1);
