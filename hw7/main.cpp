@@ -37,10 +37,9 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
 gsl_matrix* makeCholesky(gsl_matrix* K) {
 
-	gsl_matrix* C = gsl_matrix_alloc(K->size1, K->size2);
-	C = gsl_linalg_cholesky_decomp(K);
+	// gsl_matrix* C = gsl_matrix_alloc(K->size1, K->size2);
+	gsl_linalg_cholesky_decomp(K);
 
-	return(C);
 }
 
 int main() {
