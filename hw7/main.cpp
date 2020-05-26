@@ -64,12 +64,10 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 	// Calculate Cholesky decomposition
 	gsl_matrix* psi = makeCholesky(sigma);
-	printmatrix("cholesky.mat", psi);
 
 	// Draw samples
-	// gsl_matrix* s = gsl_matrix_alloc(1, sigma->size2); // 1xp matrix to hold transposed samples
-	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix to hold samples
-	gsl_vector* s = gsl_vector_alloc(sigma->size2);
+	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix output by dgemm
+	gsl_vector* s = gsl_vector_alloc(sigma->size2); // vector to hold samples
 
 	for(i = 0; i < samples->size1; i++) {
 
@@ -79,14 +77,9 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 			gsl_matrix_set(z, i, 0, gsl_ran_ugaussian(mystream));
 		}
 
-		// printmatrix("z.mat",z);
-
-		// Calculate matrix product X = psi*Z
-		// Note that this is a px1 matrix
+		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
-		// Transpose
-		// gsl_matrix_transpose_memcpy(s, X);
 
 		gsl_matrix_get_col(s, X, 0);
 
@@ -95,14 +88,11 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 	}
 
-	// printmatrix("X.mat",X);
-	printmatrix("samples.mat", samples);
-
 	// Free memory
 	gsl_matrix_free(psi);
 	gsl_matrix_free(z);
 	gsl_matrix_free(X);
-	// gsl_matrix_free(s);
+	gsl_matrix_free(s);
 
 }
 
@@ -111,7 +101,7 @@ int main() {
 	int i;
   	int n = 158;
   	int p = 51;
-  	int nsamples = 10;
+  	int nsamples = 10000;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
@@ -122,34 +112,27 @@ int main() {
   	T = gsl_rng_default;
   	r = gsl_rng_alloc(T);
 
-  	// Load erdata
+  	// Load erdata.txt
   	gsl_matrix* X = gsl_matrix_alloc(n, p);
 	FILE * f = fopen("erdata.txt", "r");
 	gsl_matrix_fscanf(f, X);
 	fclose(f);
 
-	printmatrix("datamat.mat",X);
-
 	//Calculate covariance matrix
 	gsl_matrix* covX = gsl_matrix_alloc(p, p);
 	makeCovariance(covX,X);
-
-	printmatrix("covmat.mat",covX);
 	
 	// Sample from the multivariate normal using the Cholesky decomposition
 	gsl_matrix* samples = gsl_matrix_alloc(nsamples, p);
 	randomMVN(r, samples, covX);
 
-
-  	// for(i=0;i<n;i++)
-  	// {
-  	//   double u = gsl_rng_uniform(r);
-  	//   printf("%.5lf\n",u);
-  	// }
+	// Store samples
+	printmatrix("samples.txt", samples);
 
 	// Free memory
 	gsl_matrix_free(X);
 	gsl_matrix_free(covX);
+	gsl_matrix_free(samples);
   	gsl_rng_free(r);
 	
   	return(1);
