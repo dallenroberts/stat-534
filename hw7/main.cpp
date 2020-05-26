@@ -38,18 +38,18 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
 gsl_matrix* makeCholesky(gsl_matrix* K) {
 
-	gsl_matrix* copyK = gsl_matrix_alloc(K->size1,K->size2);
-	if(GSL_SUCCESS!=gsl_matrix_memcpy(copyK,K)) {
+	gsl_matrix* cholesky = gsl_matrix_alloc(K->size1,K->size2);
+	if(GSL_SUCCESS!=gsl_matrix_memcpy(cholesky,K)) {
 		printf("GSL failed to copy a matrix.\n");
 		exit(1);
 	}
 
-	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(copyK)) {
-		printf("GSL failed LU decomposition.\n");
+	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(cholesky)) {
+		printf("GSL failed cholesky decomposition.\n");
 		exit(1);
 	}
 
-	return(copyK);
+	return(cholesky);
 }
 
 int main() {
