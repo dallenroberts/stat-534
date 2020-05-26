@@ -66,20 +66,20 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	gsl_matrix* psi = makeCholesky(sigma);
 	printmatrix("cholesky.mat", psi);
 
-	// Generate p independent N(0,1) random numbers
-	for(i = 0; i < sigma->size2; i++) {
-
-		gsl_matrix_set(z, i, 0, gsl_ran_ugaussian(mystream));
-	}
-
-	printmatrix("z.mat",z);
-
 	// Draw samples
 	// gsl_matrix* s = gsl_matrix_alloc(1, sigma->size2); // 1xp matrix to hold transposed samples
 	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix to hold samples
 	gsl_vector* s = gsl_vector_alloc(sigma->size2);
 
 	for(i = 0; i < samples->size1; i++) {
+
+		// Generate p independent N(0,1) random numbers
+		for(i = 0; i < sigma->size2; i++) {
+
+			gsl_matrix_set(z, i, 0, gsl_ran_ugaussian(mystream));
+		}
+
+		// printmatrix("z.mat",z);
 
 		// Calculate matrix product X = psi*Z
 		// Note that this is a px1 matrix
