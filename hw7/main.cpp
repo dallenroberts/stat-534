@@ -75,8 +75,9 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	printmatrix("z.mat",z);
 
 	// Draw samples
-	gsl_matrix* s = gsl_matrix_alloc(1, sigma->size2); // 1xp matrix to hold transposed samples
+	// gsl_matrix* s = gsl_matrix_alloc(1, sigma->size2); // 1xp matrix to hold transposed samples
 	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix to hold samples
+	gsl_vector* s = gsl_vector_alloc(sigma->size2);
 
 	for(i = 0; i < samples->size1; i++) {
 
@@ -85,7 +86,9 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
 		// Transpose
-		gsl_matrix_transpose_memcpy(s, X);
+		// gsl_matrix_transpose_memcpy(s, X);
+
+		gsl_matrix_get_col(s, X, 0);
 
 		// Store in samples matrix
 		gsl_matrix_set_row(samples, i, s);
@@ -99,7 +102,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	gsl_matrix_free(psi);
 	gsl_matrix_free(z);
 	gsl_matrix_free(X);
-	gsl_matrix_free(s);
+	// gsl_matrix_free(s);
 
 }
 
