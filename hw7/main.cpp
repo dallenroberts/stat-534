@@ -12,8 +12,6 @@
 // Outputs nothing, but updates the gsl_matrix stored at location covX
 void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 
-	printf("\n Inside makeCovariance \n");
-
 	int i,j;
 	double cov;
 	gsl_vector_view a, b;
@@ -57,8 +55,6 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 // gsl_matrix * sigma is the covariance matrix of the multivariate normal
 void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
-	printf("\n Inside randomMVN \n");
-
 	int i,j;
 	gsl_matrix* z = gsl_matrix_alloc(sigma->size2, 1);
 
@@ -99,7 +95,7 @@ int main() {
 	int i;
   	int n = 158;
   	int p = 51;
-  	int nsamples = 52;
+  	int nsamples = 10000;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
