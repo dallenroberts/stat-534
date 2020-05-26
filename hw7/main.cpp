@@ -80,10 +80,8 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
-
-		gsl_matrix_get_col(s, X, 0);
-
 		// Store in samples matrix
+		gsl_matrix_get_col(s, X, 0);
 		gsl_matrix_set_row(samples, i, s);
 
 	}
@@ -101,7 +99,7 @@ int main() {
 	int i;
   	int n = 158;
   	int p = 51;
-  	int nsamples = 10;
+  	int nsamples = 100;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
