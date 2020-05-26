@@ -59,7 +59,7 @@ int main() {
 	gsl_matrix_fscanf(f, X);
 	fclose(f);
 
-	printmatrix("datamat.mat",m);
+	printmatrix("datamat.mat",X);
 
 	// Calculate covariance matrix
 	gsl_matrix * covX = gsl_matrix_alloc(p, p);
