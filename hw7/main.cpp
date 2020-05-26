@@ -92,7 +92,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	gsl_matrix_free(psi);
 	gsl_matrix_free(z);
 	gsl_matrix_free(X);
-	gsl_matrix_free(s);
+	gsl_vector_free(s);
 
 }
 
