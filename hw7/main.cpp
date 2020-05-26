@@ -12,23 +12,20 @@
 // Outputs nothing, but updates the gsl_matrix stored at location covX
 void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 
-	printf("\n Inside makeCovariance");
+	printf("\n Inside makeCovariance \n");
 
-	int n = 158;
-	int p = 51;
 	int i,j;
 	double cov;
-	gsl_vector_view a;
-	gsl_vector_view b;
+	gsl_vector_view a, b;
 
+	// Calculate covariance for each combination of columns
 	for(i=0;i<X->size2;i++) {
 
 		a = gsl_matrix_column(X, i);
 
 		for(j=i;j<X-> size2;j++) {
-
           	b = gsl_matrix_column(X, j);
-          	cov = gsl_stats_covariance(a.vector.data, a.vector.stride,b.vector.data, b.vector.stride, a.vector.size);
+          	cov = gsl_stats_covariance(a.vector.data, a.vector.stride, b.vector.data, b.vector.stride, a.vector.size);
           	gsl_matrix_set(covX, i, j, cov);
 		}
 	}
@@ -64,6 +61,8 @@ int main() {
 	// Calculate covariance matrix
 	gsl_matrix * covX = gsl_matrix_alloc(p, p);
 	makeCovariance(covX,X);
+
+	printmatrix("covmat.mat",X);
 	
 
   	// for(i=0;i<n;i++)
