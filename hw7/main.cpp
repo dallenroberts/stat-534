@@ -43,7 +43,7 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 		exit(1);
 	}
 
-	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(copyK); {
+	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(copyK)) {
 		printf("GSL failed LU decomposition.\n");
 		exit(1);
 	}
