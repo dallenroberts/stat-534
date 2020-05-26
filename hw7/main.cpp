@@ -14,6 +14,8 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 
 	printf("\n Inside makeCovariance");
 
+	int n = 158;
+	int p = 51;
 	int i,j;
 	double cov;
 
