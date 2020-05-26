@@ -18,12 +18,15 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 	int p = 51;
 	int i,j;
 	double cov;
+	gsl_vector_view a;
+	gsl_vector_view b;
 
-	for(i=0;i<p;i++) {
+	for(i=0;i<X->size2;i++) {
 
-		for(j=i;j<p;j++) {
+		a = gsl_matrix_column(X, i);
 
-			a = gsl_matrix_column(X, i);
+		for(j=i;j<X-> size2;j++) {
+
           	b = gsl_matrix_column(X, j);
           	cov = gsl_stats_covariance(a.vector.data, a.vector.stride,b.vector.data, b.vector.stride, a.vector.size);
           	gsl_matrix_set(covX, i, j, cov);
