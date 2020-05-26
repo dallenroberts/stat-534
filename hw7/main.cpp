@@ -13,7 +13,7 @@
 void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 
 	printf("\n Inside makeCovariance");
-	return(1)
+	return(1);
 
 }
 
