@@ -74,7 +74,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 		}
 
 		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
-		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
+		gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
 		// Store in samples matrix
 		gsl_matrix_get_col(s, X, 0);
