@@ -101,7 +101,7 @@ int main() {
 	int i;
   	int n = 158;
   	int p = 51;
-  	int nsamples = 10000;
+  	int nsamples = 10;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
