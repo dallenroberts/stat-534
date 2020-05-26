@@ -75,7 +75,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	printmatrix("z.mat",z);
 
 	// Calculate matrix product X = psi*Z
-	gsl_matrix* X = gsl_matrix_alloc(samples->size1,sigma->size2);
+	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, samples->size1);
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 	printmatrix("X.mat",X);
 
