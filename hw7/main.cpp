@@ -71,11 +71,10 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 	for(i = 0; i < samples->size1; i++) {
 
-		printf("\n i: %d", i);
 		// Generate p independent N(0,1) random numbers
 		for(j = 0; j < sigma->size2; j++) {
 
-			gsl_matrix_set(z, i, 0, gsl_ran_ugaussian(mystream));
+			gsl_matrix_set(z, j, 0, gsl_ran_ugaussian(mystream));
 		}
 
 		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
@@ -83,9 +82,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 		// Store in samples matrix
 		gsl_matrix_get_col(s, X, 0);
-		printf("\n Got col");
 		gsl_matrix_set_row(samples, i, s);
-		printf("\n Set row \n");
 
 	}
 
