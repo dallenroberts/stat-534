@@ -13,6 +13,21 @@
 void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 
 	printf("\n Inside makeCovariance");
+
+	int i,j;
+	double cov;
+
+	for(i=0;i<p;i++) {
+
+		for(j=i;j<p;j++) {
+
+			a = gsl_matrix_column(X, i);
+          	b = gsl_matrix_column(X, j);
+          	cov = gsl_stats_covariance(a.vector.data, a.vector.stride,b.vector.data, b.vector.stride, a.vector.size);
+          	gsl_matrix_set(covX, i, j, cov);
+		}
+	}
+
 	return;
 
 }
@@ -34,12 +49,16 @@ int main() {
   	r = gsl_rng_alloc(T);
 
   	// Load erdata
-  	gsl_matrix * m = gsl_matrix_alloc(n, p);
+  	gsl_matrix * X = gsl_matrix_alloc(n, p);
 	FILE * f = fopen("erdata.txt", "r");
-	gsl_matrix_fscanf(f, m);
+	gsl_matrix_fscanf(f, X);
 	fclose(f);
 
 	printmatrix("datamat.mat",m);
+
+	// Calculate covariance matrix
+	gsl_matrix * covX = gsl_matrix_alloc(p, p);
+	makeCovariance(covX,X);
 	
 
   	// for(i=0;i<n;i++)
@@ -49,7 +68,8 @@ int main() {
   	// }
 
 	// Free memory
-	gsl_matrix_free(m);
+	gsl_matrix_free(X);
+	gsl_matrix_free(covX);
   	gsl_rng_free(r);
 	
   	return(1);
