@@ -78,7 +78,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	gsl_matrix* s = gsl_matrix_alloc(1, sigma->size2); // 1xp matrix to hold transposed samples
 	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix to hold samples
 
-	for(i = 0; i < nsamples, i++) {
+	for(i = 0; i < samples->size1; i++) {
 
 		// Calculate matrix product X = psi*Z
 		// Note that this is a px1 matrix
