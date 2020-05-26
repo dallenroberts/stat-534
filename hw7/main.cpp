@@ -27,6 +27,7 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
           	b = gsl_matrix_column(X, j);
           	cov = gsl_stats_covariance(a.vector.data, a.vector.stride, b.vector.data, b.vector.stride, a.vector.size);
           	gsl_matrix_set(covX, i, j, cov);
+          	gsl_matrix_set(covX, j, i, cov);
 		}
 	}
 
