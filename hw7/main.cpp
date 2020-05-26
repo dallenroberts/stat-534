@@ -99,7 +99,7 @@ int main() {
 	int i;
   	int n = 158;
   	int p = 51;
-  	int nsamples = 51;
+  	int nsamples = 52;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
