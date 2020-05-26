@@ -52,11 +52,36 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 	return(cholesky);
 }
 
+// Samples from the multivariate normal distribution using the Cholesky decomposition
+// Inputs random number state mystream, gsl_matrix * samples to hold samples, and 
+// gsl_matrix * sigma is the covariance matrix of the multivariate normal
+void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
+
+	printf("\n Inside randomMVN \n");
+
+	int i;
+	gsl_matrix* unif = gsl_matrix_alloc(1, p);
+
+	// Calculate Cholesky decomposition
+	gsl_matrix* C = makeCholesky(sigma);
+	printmatrix("cholesky.mat",C);
+
+	// Generate p independent N(0,1) random numbers
+	for(i = 0; i < sigma->size2; i++) {
+
+		gsl_matrix_set(unif, 0, i, gsl_ran_ugaussian(mystream));
+	}
+
+	printmatrix("unif.mat",unif);
+
+}
+
 int main() {
 
 	int i;
   	int n = 158;
   	int p = 51;
+  	int nsamples = 10;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
@@ -68,24 +93,23 @@ int main() {
   	r = gsl_rng_alloc(T);
 
   	// Load erdata
-  	gsl_matrix * X = gsl_matrix_alloc(n, p);
+  	gsl_matrix* X = gsl_matrix_alloc(n, p);
 	FILE * f = fopen("erdata.txt", "r");
 	gsl_matrix_fscanf(f, X);
 	fclose(f);
 
 	printmatrix("datamat.mat",X);
 
-	// Problem 1
 	//Calculate covariance matrix
 	gsl_matrix* covX = gsl_matrix_alloc(p, p);
 	makeCovariance(covX,X);
 
 	printmatrix("covmat.mat",covX);
 	
-	// Problem 2
-	// Calculate Cholesky decomposition
-	gsl_matrix* C = makeCholesky(covX);
-	printmatrix("cholesky.mat",C);
+	// Sample from the multivariate normal using the Cholesky decomposition
+	gsl_matrix* samples = gsl_matrix_alloc(nsamples, p);
+	randomMVN(r, samples, covX);
+
 
   	// for(i=0;i<n;i++)
   	// {
