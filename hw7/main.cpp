@@ -74,15 +74,32 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 	printmatrix("z.mat",z);
 
-	// Calculate matrix product X = psi*Z
-	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1);
+	// Draw samples
+	gsl_matrix* s = gsl_matrix_alloc(1, sigma->size2); // 1xp matrix to hold transposed samples
+	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix to hold samples
 
-	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
-	printmatrix("X.mat",X);
+	for(i = 0; i < nsamples, i++) {
+
+		// Calculate matrix product X = psi*Z
+		// Note that this is a px1 matrix
+		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
+
+		// Transpose
+		gsl_matrix_transpose_memcpy(s, X);
+
+		// Store in samples matrix
+		gsl_matrix_set_row(samples, i, s);
+
+	}
+
+	// printmatrix("X.mat",X);
+	printmatrix("samples.mat", samples);
 
 	// Free memory
 	gsl_matrix_free(psi);
 	gsl_matrix_free(z);
+	gsl_matrix_free(X);
+	gsl_matrix_free(s);
 
 }
 
