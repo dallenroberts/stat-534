@@ -83,7 +83,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 		// Store in samples matrix
 		printf("\n i: %d", i);
 		gsl_matrix_get_col(s, X, 0);
-		printf("\n Got col \n")
+		printf("\n Got col \n");
 		gsl_matrix_set_row(samples, i, s);
 		printf("\n Set row \n\n");
 
