@@ -60,7 +60,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	printf("\n Inside randomMVN \n");
 
 	int i;
-	gsl_matrix* unif = gsl_matrix_alloc(1, p);
+	gsl_matrix* unif = gsl_matrix_alloc(1, sigma->size2);
 
 	// Calculate Cholesky decomposition
 	gsl_matrix* C = makeCholesky(sigma);
@@ -73,6 +73,9 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	}
 
 	printmatrix("unif.mat",unif);
+
+	gsl_matrix_free(C);
+	gsl_matrix_free(unif);
 
 }
 
@@ -120,7 +123,6 @@ int main() {
 	// Free memory
 	gsl_matrix_free(X);
 	gsl_matrix_free(covX);
-	gsl_matrix_free(C);
   	gsl_rng_free(r);
 	
   	return(1);
