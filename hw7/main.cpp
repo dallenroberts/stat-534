@@ -60,7 +60,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	printf("\n Inside randomMVN \n");
 
 	int i;
-	gsl_matrix* z = gsl_matrix_alloc(1, sigma->size2);
+	gsl_matrix* z = gsl_matrix_alloc(sigma->size2, 1);
 
 	// Calculate Cholesky decomposition
 	gsl_matrix* psi = makeCholesky(sigma);
@@ -69,7 +69,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 	// Generate p independent N(0,1) random numbers
 	for(i = 0; i < sigma->size2; i++) {
 
-		gsl_matrix_set(z, 0, i, gsl_ran_ugaussian(mystream));
+		gsl_matrix_set(z, i, 0, gsl_ran_ugaussian(mystream));
 	}
 
 	printmatrix("z.mat",z);
