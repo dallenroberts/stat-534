@@ -12,7 +12,7 @@ matrices.o: matrices.cpp matrices.h
 main.o: main.cpp matrices.h
 	gcc -g -c main.cpp -o main.o
 
-rnd: main.o
+rnd: main.o matrices.o
 	gcc main.o matrices.o -o rnd ${RND_LIB} ${RND_LSTDFLG}
 
 clean:
