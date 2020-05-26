@@ -308,7 +308,7 @@ MC3search <- function(response, data, n_iter, verbose = FALSE) {
 main <- function(datafile) {
   
   ## For reproducibility
-  set.seed(1)
+  set.seed(123)
   
   #read the data
   data = read.table(datafile,header=FALSE);
