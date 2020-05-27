@@ -52,7 +52,7 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 
 	// Retain only the lower triangle
 	for(i=0;i<cholesky->size1;i++) {
-		for(j=i;j<cholesky->size2;j++) {
+		for(j>i;j<cholesky->size2;j++) {
 			gsl_matrix_set(cholesky, i, j, 0);
 		}
 	}
