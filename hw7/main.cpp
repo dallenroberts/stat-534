@@ -102,6 +102,8 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 int main() {
 
+while(1)
+{
 	int i;
   	int n = 158;
   	int p = 51;
@@ -141,6 +143,7 @@ int main() {
 	gsl_matrix_free(samples);
   	gsl_rng_free(r);
   	gsl_matrix_free(sampleCov);
+  }
 	
   	return(1);
 }
