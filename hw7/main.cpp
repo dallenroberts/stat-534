@@ -34,7 +34,7 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 }
 
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
-// Note that the final matrix is lower triangular
+// Note that the final matrix returned is lower triangular
 gsl_matrix* makeCholesky(gsl_matrix* K) {
 
 	int i, j;
@@ -70,7 +70,6 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 	// Calculate Cholesky decomposition
 	gsl_matrix* psi = makeCholesky(sigma);
-	printmatrix("psi.txt", psi);
 
 	// Draw samples
 	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix output by dgemm
@@ -106,7 +105,7 @@ int main() {
 	int i;
   	int n = 158;
   	int p = 51;
-  	int nsamples = 100000;
+  	int nsamples = 10000;
 
 	// Initialize random number generator
   	const gsl_rng_type* T;
@@ -131,14 +130,17 @@ int main() {
 	gsl_matrix* samples = gsl_matrix_alloc(nsamples, p);
 	randomMVN(r, samples, covX);
 
-	// Store samples
-	printmatrix("samples.txt", samples);
+	// Calculate sample covariance matrix
+	gsl_matrix* sampleCov = gsl_matrix_alloc(p, p);
+	makeCovariance(sampleCov, samples);
+	printmatrix("sampleCov.txt", sampleCov);
 
 	// Free memory
 	gsl_matrix_free(X);
 	gsl_matrix_free(covX);
 	gsl_matrix_free(samples);
   	gsl_rng_free(r);
+  	gsl_matrix_free(sampleCov);
 	
   	return(1);
 }
