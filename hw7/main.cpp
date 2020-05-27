@@ -53,7 +53,7 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 	// Retain only the lower triangle
 	for(i=0;i<cholesky->size1;i++) {
 		for(j=(i+1);j<cholesky->size2;j++) {
-			gsl_matrix_set(cholesky, i, j, 0);
+			gsl_matrix_set(cholesky, i, j, 0.0);
 		}
 	}
 
@@ -102,8 +102,6 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 int main() {
 
-while(1)
-{
 	int i;
   	int n = 158;
   	int p = 51;
@@ -124,7 +122,7 @@ while(1)
 	gsl_matrix_fscanf(f, X);
 	fclose(f);
 
-	//Calculate covariance matrix
+	// Calculate covariance matrix
 	gsl_matrix* covX = gsl_matrix_alloc(p, p);
 	makeCovariance(covX,X);
 	
@@ -143,7 +141,6 @@ while(1)
 	gsl_matrix_free(samples);
   	gsl_rng_free(r);
   	gsl_matrix_free(sampleCov);
-  }
 	
   	return(1);
 }
