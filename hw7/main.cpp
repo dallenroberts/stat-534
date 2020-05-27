@@ -70,6 +70,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 	// Calculate Cholesky decomposition
 	gsl_matrix* psi = makeCholesky(sigma);
+	printmatrix("psi.txt", psi);
 
 	// Draw samples
 	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix output by dgemm
