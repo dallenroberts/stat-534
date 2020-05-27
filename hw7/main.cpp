@@ -34,7 +34,10 @@ void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
 }
 
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
+// Note that the final matrix is lower triangular
 gsl_matrix* makeCholesky(gsl_matrix* K) {
+
+	int i, j;
 
 	gsl_matrix* cholesky = gsl_matrix_alloc(K->size1,K->size2);
 	if(GSL_SUCCESS!=gsl_matrix_memcpy(cholesky,K)) {
@@ -45,6 +48,13 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(cholesky)) {
 		printf("GSL failed cholesky decomposition.\n");
 		exit(1);
+	}
+
+	// Retain only the lower triangle
+	for(i=0;i<cholesky->size1;i++) {
+		for(j=i;j<cholesky->size2;j++) {
+			gsl_matrix_set(cholesky, i, j, 0);
+		}
 	}
 
 	return(cholesky);
@@ -74,7 +84,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 		}
 
 		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
-		gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
+		gsl_blas_dgemm(CblasNoTransTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
 		// Store in samples matrix
 		gsl_matrix_get_col(s, X, 0);
