@@ -346,7 +346,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		if((newLoglik - currentLoglik) < tol) {
 
 			printf("\n NR algorithm converged after %d iterations.", iter);
-			printf(" l*(beta0, beta1) = %.3f \n", currentLoglik);
+			printf("\n    l*(beta0, beta1) = %.3f \n", currentLoglik);
 
 
 			// IS THIS MEMORY FREE NECESSARY?
