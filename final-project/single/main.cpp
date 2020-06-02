@@ -160,6 +160,10 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	// Calculate logistic log likelihood
 	for(i=0;i<n;i++) {
 
+		printf("\n i=%d", i);
+		printf("\n yi=%d", gsl_matrix_get(y, i, 0));
+		printf("\n pi=%d", gsl_matrix_get(Pis, i, 0));
+
 		yi = gsl_matrix_get(y, i, 0);
 		pi = gsl_matrix_get(Pis, i, 0);
 
@@ -218,7 +222,7 @@ int main() {
 
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
-	gsl_matrix_set_zero(beta);
+	gsl_matrix_set_zero(beta); // THINK THIS MIGHT BE AN INTEGER PROBLEM...
 
 	// Initialize predictor and response columns
 	gsl_matrix* x = gsl_matrix_alloc(n, 1);
