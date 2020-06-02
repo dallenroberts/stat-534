@@ -207,7 +207,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	double currentLoglik;
 	double newLoglik;
-	int iter;
+	int iter = 0;
 	double tol = 0.00001;
 
 	// Initialize beta matrix
@@ -218,7 +218,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	// Calculate log likelihood l*
 	currentLoglik = logisticLogLikStar(n, y, x, beta);
-	iter = 0;
 
 	// Matrix to store product of hessian inverse and gradient
 	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
@@ -227,7 +226,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	while(iter < maxIter) {
 
 		iter += 1;
-		printf("\niter=%d", i);
+		printf("\niter=%d", iter);
 
 		// Get Hessian
 		gsl_matrix* hessian = getHessian(n, x, beta);
@@ -272,7 +271,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	}
 	
-
 	gsl_matrix_free(newBeta);
 	gsl_matrix_free(hessian);
 	gsl_matrix_free(gradient);
