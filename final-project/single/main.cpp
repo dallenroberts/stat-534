@@ -166,11 +166,11 @@ double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* be
 	for(i=0;i<beta->size1;i++) {
 		for(j=0;j<beta->size2;j++) {
 
-			bsum += gsl_matrix_get(beta, i, j)^2;
+			bsum += pow(gsl_matrix_get(beta, i, j), 2);
 		}
 	}
 
-	lstar = -log(2.0*pi) - 0.5*(bsum) + loglik;
+	lstar = -log(2.0*pi) - 0.5*(bsum) + logLik;
 
 	gsl_matrix_free(Pis);
 	printf("\nlogLik = %d", logLik);
