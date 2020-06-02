@@ -352,6 +352,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 			gsl_matrix_free(hessianInv);
 			gsl_matrix_free(hessGrad);
 
+			break;
+
 		} else {
 
 			currentLoglik = newLoglik;
@@ -365,7 +367,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 		printf("\nNR algorithm reached maximum iterations.");
 		printf(" Log-likelihood is %f \n", currentLoglik);
-		return(beta);
 
 	}
 
