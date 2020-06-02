@@ -100,7 +100,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 }
 
-double logisticLogLikStar(int y, int x, double beta) {
+double logisticLogLikStar(int y, int x, gsl_matrix * beta) {
 
 	printf("\n Inside logisticLogLikStar\n");
 	return(1)
@@ -121,7 +121,7 @@ int main() {
   	// while column 61 (the last column) corresponds with the response binary variable Y
   	gsl_matrix* data = gsl_matrix_alloc(n, p);
 	FILE * f = fopen("534finalprojectdata.txt", "r");
-	gsl_matrix_fscanf(f, data;
+	gsl_matrix_fscanf(f, data);
 	fclose(f);
 
 	// Calculate log likelihood l*
