@@ -52,10 +52,10 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_ma
 	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix output by dgemm
 	gsl_vector* s = gsl_vector_alloc(sigma->size2); // vector to hold samples
 
-	for(i = 0; i < samples->size1; i++) {
+	for(i = 0; i < samples->size2; i++) {
 
 		// Generate p independent N(0,1) random numbers
-		for(j = 0; j < sigma->size2; j++) {
+		for(j = 0; j < sigma->size1; j++) {
 
 			gsl_matrix_set(z, j, 0, gsl_ran_ugaussian(mystream));
 		}
