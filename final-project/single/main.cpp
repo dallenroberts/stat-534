@@ -346,7 +346,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		if((newLoglik - currentLoglik) < tol) {
 
 			printf("\n NR algorithm converged after %d iterations.", iter);
-			printf(" l*(beta0, beta1)=%.3f \n", currentLoglik);
+			printf(" l*(beta0, beta1) = %.3f \n", currentLoglik);
 
 
 			// IS THIS MEMORY FREE NECESSARY?
@@ -365,7 +365,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	if(iter == maxIter) {
 
 		printf("\nNR algorithm reached maximum iterations.");
-		printf(" Log-likelihood is %f \n", currentLoglik);
+		printf(" l*(beta0, beta1) = %.3f \n", currentLoglik);
 
 	}
 
@@ -552,13 +552,13 @@ int main() {
 	printf("\n Sample means:\n");
 	for(i=0;i<(sampleMeans->size1);i++) {
 
-		printf("   beta%i=%.3f\n", i, gsl_matrix_get(sampleMeans, i, 0));
+		printf("   beta%i = %.3f\n", i, gsl_matrix_get(sampleMeans, i, 0));
 	}
 	printmatrix("sampleMeans.txt", sampleMeans);
 
 	// Calculate log marginal likelihood using LaPlace approximation
 	lml_la = getLaplaceApprox(n, y, x, betaMode);
-	printf("\n Posterior log marginal likelihood P(D) calculated by Laplace approximation: %.3f \n", lml_la);
+	printf("\n Posterior log marginal likelihood P(D) calculated by Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
 
