@@ -141,11 +141,11 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 }
 
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
-double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* beta) {
+double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
 	double logLik = 0;
 	int i,j;
-	double y;
+	double yi;
 	double pi;
 	double lstar;
 	double bsum = 0;
@@ -159,10 +159,10 @@ double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* be
 	// Calculate logistic log likelihood
 	for(i=0;i<n;i++) {
 
-		y = gsl_matrix_get(resp, i, 0);
+		yi = gsl_matrix_get(y, i, 0);
 		pi = gsl_matrix_get(Pis, i, 0);
 
-		logLik += y*log(pi) + (1-y)*log(1-pi);
+		logLik += yi*log(pi) + (1-yi)*log(1-pi);
 	}
 
 	// // Calculate sum of squared entries in beta matrix
