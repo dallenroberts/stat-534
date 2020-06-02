@@ -365,7 +365,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	if(iter == maxIter) {
 
 		printf("\nNR algorithm reached maximum iterations.");
-		printf(" l*(beta0, beta1) = %.3f \n", currentLoglik);
+		printf("\n    l*(beta0, beta1) = %.3f \n", currentLoglik);
 
 	}
 
@@ -407,7 +407,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	gsl_matrix* candidateBeta = gsl_matrix_alloc(2, 1);
 
 	// Start Markov chain
-	printf("\n Starting Metropolis-Hastings Algorithm...\n");
+	printf("\n Starting Metropolis-Hastings Algorithm...");
 	for(k=0; k<niter;k++) {
 		// printf("\n MC iter %d", (k+1));
 		
@@ -463,7 +463,7 @@ gsl_matrix* getPosteriorMeans(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matr
 	// printmatrix("MHsamples.txt", samples);
 
 	// Calculate sample means
-	printf("\n Metropolis-Hastings finished, calculating sample means...\n");
+	printf("Metropolis-Hastings finished\n");
 	gsl_matrix* sampleMeans = gsl_matrix_alloc(2, 1);
 
 	for(i=0; i<(samples->size2); i++) {
