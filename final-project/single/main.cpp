@@ -138,7 +138,7 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 }
 
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
-double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* beta) {
 
 	double logLik = 0;
 	int i;
