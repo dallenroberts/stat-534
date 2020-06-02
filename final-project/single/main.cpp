@@ -265,6 +265,9 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// Stop if the log-likelihood does not improve by too much
 		if((newLoglik - currentLoglik) < tol) {
 
+			printf("\n NR algorithm converged after %d iterations\n", iter);
+
+			// IS THIS MEMORY FREE NECESSARY?
 			gsl_matrix_free(newBeta);
 			gsl_matrix_free(hessian);
 			gsl_matrix_free(gradient);
@@ -284,13 +287,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	if(iter == maxIter) {
 
 		printf("\nNR algorithm reached maximum iterations\n");
-
-		gsl_matrix_free(newBeta);
-		gsl_matrix_free(hessian);
-		gsl_matrix_free(gradient);
-		gsl_matrix_free(hessianInv);
-		gsl_matrix_free(hessGrad);
-		
 		return(beta);
 
 	}
