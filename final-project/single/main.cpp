@@ -131,7 +131,6 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 		gsl_matrix_set(out, i, 0, inverseLogit(gsl_matrix_get(out, i, 0)));
 	}
 
-
 	gsl_matrix_free(x0);
 
 	return(out);
@@ -141,15 +140,29 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
 double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
-	double logLik;
+	double logLik = 0;
 	int i;
+	double y;
+	double pi;
 
+	printf("\n Inside logisticLogLikStar\n");
+
+	// getPis
 	gsl_matrix* Pis = getPi(n, x, beta);
 	printmatrix("pis.txt", Pis);
 
+	// Calculate logistic log likelihood
+	for(i=0;i<n;i++) {
 
-	printf("\n Inside logisticLogLikStar\n");
-	return(1);
+		y = gsl_matrix_get(y, i, 0);
+		pi = gsl_matrix_get(Pis, i, 0);
+
+		logLik += y*log(pi) + (1-y)*log(1-pi);
+	}
+
+	gsl_matrix_free(Pis);
+	printf("\nlogLike = %d", logLik);
+	return(logLik);
 }
 
 // Loads 534finalprojectdata.txt
