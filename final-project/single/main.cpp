@@ -272,15 +272,28 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 			gsl_matrix_free(hessGrad);
 
 			return(beta);
+		} else {
+
+			currentLoglik = newLoglik;
+
 		}
-	
-		currentLoglik = newLoglik;
 
 	}
 
 	// MEMORY FREE HERE?
-	
-	return(beta);
+	if(iter == maxIter) {
+
+		printf("\nNR algorithm reached maximum iterations\n");
+
+		gsl_matrix_free(newBeta);
+		gsl_matrix_free(hessian);
+		gsl_matrix_free(gradient);
+		gsl_matrix_free(hessianInv);
+		gsl_matrix_free(hessGrad);
+		
+		return(beta);
+
+	}
 
 }
 
