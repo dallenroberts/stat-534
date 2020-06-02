@@ -222,8 +222,10 @@ int main() {
 
 	// Calculate log likelihood l*
 	double currentLoglik;
+	double newLoglik;
 	int iter;
 	int maxIter = 1000;
+	double tol = 0.000001;
 
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
@@ -262,6 +264,30 @@ int main() {
 	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
 	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
 	printmatrix("hessGrad.txt", hessGrad);
+
+	// Update new beta
+	newBeta = beta;
+	gsl_matrix_sub(newBeta, hessGrad);
+	printmatrix("newBeta.txt", newBeta);
+
+	newLoglik = logisticLogLikStar(n, y, x, newBeta);
+	printf("\n newLoglik=%f", newLoglik);
+
+	// At each iteration the log-likelihood must increase
+	if(newLoglik < currentLoglik) {
+		printf("Coding error! Iteration made logLik worse");
+		break;
+	}
+
+	// Update beta
+	beta = newBeta;
+
+	// Stop if the log-likelihood does not improve by too much
+	if((newLoglik - currentLoglik) < tol) {
+		break;
+	}
+
+	currentLoglik = newLoglik;
 
 
 	// Free memory
