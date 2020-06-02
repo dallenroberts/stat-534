@@ -73,8 +73,9 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_ma
 		printf("\n Storing in samples matrix \n");
 		printmatrix("sigma.txt", sigma);
 		gsl_matrix_get_col(s, X, 0);
-		printmatrix("samples.txt", samples);
+		
 		gsl_matrix_set_col(samples, i, s);
+		printmatrix("samples.txt", samples);
 
 	}
 
