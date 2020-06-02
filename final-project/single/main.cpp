@@ -100,10 +100,10 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 }
 
-double logisticLogLikStar(int y, int x, gsl_matrix * beta) {
+double logisticLogLikStar(int y, int x, gsl_matrix* beta) {
 
 	printf("\n Inside logisticLogLikStar\n");
-	return(1)
+	return(1);
 }
 
 // Loads 534finalprojectdata.txt
