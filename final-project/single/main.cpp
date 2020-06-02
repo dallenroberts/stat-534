@@ -218,6 +218,7 @@ int main() {
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
+	printmatrix("beta.txt", beta);
 
 	// Initialize predictor and response columns
 	gsl_matrix* x = gsl_matrix_alloc(n, 1);
