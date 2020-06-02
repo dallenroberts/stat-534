@@ -444,6 +444,35 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 }
 
+// Calculates the posterior means of niter samples from the joint distribution
+// of the betas given the observed data. Sampling is done via Metropolis-
+// Hastings. Returns a 2x1 matrix of beta values.
+gsl_matrix* getPosteriorMeans(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMode, int niter) {
+
+	int i;
+	gsl_vector_view a;
+
+	// Simulate 1000 samples from the posterior distribution using Metropolis-Hastings
+	gsl_matrix* samples = sampleMH(mystream, n, y, x, betaMode, niter);
+	// printmatrix("MHsamples.txt", samples);
+
+	// Calculate sample means
+	printf("\n Metropolis-Hastings finished, calculating sample means...\n");
+	gsl_matrix* sampleMeans = gsl_matrix_alloc(2, 1);
+
+	for(i=0; i<(samples->size2); i++) {
+
+		a = gsl_matrix_column(samples, i);
+		gsl_matrix_set(sampleMeans, i, 0, 
+			gsl_stats_mean(a.vector.data, a.vector.stride, (samples->size1)));
+
+	}
+
+	gsl_matrix_free(samples);
+
+	return(sampleMeans);
+}
+
 // Loads 534finalprojectdata.txt
 int main() {
 
@@ -485,27 +514,13 @@ int main() {
 	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
 	printmatrix("betaMode.txt", betaMode);
 
-	// Simulate 1000 samples from the posterior distribution using Metropolis-Hastings
-	gsl_matrix* samples = sampleMH(r, n, y, x, betaMode, 1000);
-	printmatrix("MHsamples.txt", samples);
-
-	// Calculate sample means
-	gsl_matrix* sampleMeans = gsl_matrix_alloc(2, 1);
-	gsl_vector_view a;
-	for(i=0; i<(samples->size2); i++) {
-
-		a = gsl_matrix_column(samples, i);
-		gsl_matrix_set(sampleMeans, i, 0, 
-			gsl_stats_mean(a.vector.data, a.vector.stride, (samples->size1)));
-
-	}
+	gsl_matrix* sampleMeans = getPosteriorMeans(r, n, y, x, betaMode, 1000);
 	printmatrix("sampleMeans.txt", sampleMeans);
 	
 	// Free memory
 	gsl_matrix_free(x);
 	gsl_matrix_free(y);
 	gsl_matrix_free(betaMode);
-	gsl_matrix_free(samples);
 	gsl_matrix_free(sampleMeans);
 	gsl_matrix_free(data);
 	gsl_rng_free(r);
