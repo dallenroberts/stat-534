@@ -149,7 +149,7 @@ gsl_matrix* getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 	}
 
 	g_00 -= gsl_matrix_get(beta, 0, 0);
-	g_10 -= gsl_matrix_get(beta, 0, 1);
+	g_10 -= gsl_matrix_get(beta, 1, 0);
 
 	gsl_matrix_set(gradient, 0, 0, g_00);
 	gsl_matrix_set(gradient, 1, 0, g_10);
