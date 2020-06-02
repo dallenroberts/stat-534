@@ -7,6 +7,9 @@
 #include <gsl/gsl_rng.h>
 #include "matrices.h"
 
+// Global variables
+const double pi_const = 3.14159265358979323846264338327950288;
+
 // Function that inputs a pointer to a pxp GSL matrix covX and a pointer to a 
 // nxp data matrix X and calculates the pxp sample covariance matrix sigma
 // Outputs nothing, but updates the gsl_matrix stored at location covX
@@ -173,10 +176,10 @@ double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* be
 	printf("\n bsum=%d", bsum);
 
 	double con;
-	con = -log(2.0*M_PI);
+	con = -log(2.0*pi_const);
 	printf("\n con=%d", con);
 
-	lstar = -log(2.0*M_PI) - 0.5*bsum + logLik;
+	lstar = -log(2.0*pi_const) - 0.5*bsum + logLik;
 
 	printf("\nlogLik = %d", logLik);
 	printf("\nlstar = %d \n", lstar);
