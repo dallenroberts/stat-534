@@ -479,6 +479,32 @@ gsl_matrix* getPosteriorMeans(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matr
 	return(sampleMeans);
 }
 
+// getLaplaceApprox uses the Laplace Approximation to calcuate an approximate 
+// marginal likelihood for univariate Bayesian logistic regression. Note that 
+// this function calculates and returns the log-likehood
+double getLaplaceApprox(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMode) {
+
+	double loglik_star;
+	double lml;
+
+	// Get Hessian and multiply by -1
+	gsl_matrix* hessian = gsl_matrix_alloc(2,2);
+	getHessian(n, x, betaMmode, hessian)
+	gsl_matrix_scale(hessian, -1.0);
+
+	// Calculate l*(beta_0, beta_1)
+	loglik_star = logisticLogLikStar(n, y, x, betaMode);
+
+	// Calculate log marginal likelihood
+	lml = 2.0*log(M_PI) + loglik_star - 0.5*logdet(hessian);
+
+	// Free memory
+	gsl_matrix_free(hessian);
+
+	return(lml);
+
+}
+
 // Loads 534finalprojectdata.txt
 int main() {
 
@@ -486,6 +512,8 @@ int main() {
   	int n = 148;
   	int p = 61;
   	int response = 60; // Index of the response column
+  	double lml_la;
+  	double lml_mc;
 	
 	int index = 0;
 
@@ -523,9 +551,10 @@ int main() {
 	printmatrix("sampleMeans.txt", sampleMeans);
 
 	// Calculate log marginal likelihood using LaPlace approximation
+	lml_la = getLaplaceApprox(n, y, x, betaMode);
+	printf("\n Log marginal likelihood calculated by Laplace approximation: %f", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
-
 
 	
 	// Free memory
