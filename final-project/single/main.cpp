@@ -172,11 +172,16 @@ double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* be
 
 	printf("\n bsum=%d", bsum);
 
-	lstar = -log(2.0*M_PI) - 0.5*(bsum) + logLik;
+	double con;
+	con = -log(2.0*M_PI);
+	printf("\n con=%d", con);
 
-	gsl_matrix_free(Pis);
+	lstar = -log(2.0*M_PI) - 0.5*bsum + logLik;
+
 	printf("\nlogLik = %d", logLik);
 	printf("\nlstar = %d \n", lstar);
+
+	gsl_matrix_free(Pis);
 
 	return(lstar);
 }
