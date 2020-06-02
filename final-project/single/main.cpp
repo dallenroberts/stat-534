@@ -64,6 +64,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_ma
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
 		// Add mean vector
+		printf("\nAbout to add matrices\n");
 		gsl_matrix_add(X, means);
 
 		// Store in samples matrix
@@ -394,7 +395,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 	// Start Markov chain
 	// for(k=0; k<niter;k++) {
-
+	printf("\nMade it to randomMVN\n");
 		// printf("\n MC iter %d", (k+1));
 		randomMVN(mystream, candidateBeta, covMat, currentBeta);
 		printmatrix("candidateBeta.txt", candidateBeta);
