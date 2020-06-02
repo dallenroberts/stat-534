@@ -229,6 +229,8 @@ int main() {
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
 
+	gsl_matrix* newBeta = gsl_matrix_alloc(2, 1);
+
 	// Initialize predictor and response columns
 	gsl_matrix* x = gsl_matrix_alloc(n, 1);
 	gsl_matrix* y = gsl_matrix_alloc(n, 1);
@@ -244,19 +246,33 @@ int main() {
 
 	iter += 1;
 
+	// Get Hessian
 	gsl_matrix* hessian = getHessian(n, x, beta);
 	printmatrix("hessian.txt", hessian);
 
+	// Get gradient
 	gsl_matrix* gradient = getGradient(n, y, x, beta);
 	printmatrix("gradient.txt", gradient);
+
+	// Get hessian inverse
+	gsl_matrix* hessianInv = inverse(hessian);
+	printmatrix("hessianInv.txt", hessianInv);
+
+	// Get product of hessian inverse and gradient
+	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
+	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
+	printmatrix("hessGrad.txt", hessGrad);
 
 
 	// Free memory
 	gsl_matrix_free(x);
 	gsl_matrix_free(y);
 	gsl_matrix_free(beta);
+	gsl_matrix_free(newBeta);
 	gsl_matrix_free(hessian);
 	gsl_matrix_free(gradient);
+	gsl_matrix_free(hessianInv);
+	gsl_matrix_free(hessGrad);
 	gsl_matrix_free(data);
 	
   	return(1);
