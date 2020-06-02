@@ -154,7 +154,7 @@ double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* be
 	// Calculate logistic log likelihood
 	for(i=0;i<n;i++) {
 
-		y = gsl_matrix_get(y, i, 0);
+		y = gsl_matrix_get(resp, i, 0);
 		pi = gsl_matrix_get(Pis, i, 0);
 
 		logLik += y*log(pi) + (1-y)*log(1-pi);
