@@ -64,18 +64,17 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_ma
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
 
 		// Add mean vector
-		printf("\nAbout to add matrices\n");
-		printmatrix("X.txt", X);
-		printmatrix("means.txt", means);
+		// printf("\nAbout to add matrices\n");
+		// printmatrix("X.txt", X);
+		// printmatrix("means.txt", means);
 		gsl_matrix_add(X, means);
 
 		// Store in samples matrix
-		printf("\n Storing in samples matrix \n");
-		printmatrix("sigma.txt", sigma);
+		// printf("\n Storing in samples matrix \n");
+		// printmatrix("sigma.txt", sigma);
 		gsl_matrix_get_col(s, X, 0);
-		
 		gsl_matrix_set_col(samples, i, s);
-		printmatrix("samples.txt", samples);
+		// printmatrix("samples.txt", samples);
 
 	}
 
@@ -382,6 +381,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMode, int niter) {
 
 	int k;
+	double score;
+	double u;
 
 	// Allocate matrix to store samples
 	gsl_matrix* samples = gsl_matrix_alloc(niter, 2);
@@ -400,14 +401,37 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	gsl_matrix* candidateBeta = gsl_matrix_alloc(2, 1);
 
 	// Start Markov chain
-	// for(k=0; k<niter;k++) {
-	printf("\nMade it to randomMVN\n");
-		// printf("\n MC iter %d", (k+1));
+	for(k=0; k<niter;k++) {
+		printf("\n MC iter %d", (k+1));
+		
+		// Draw candidate beta from multivariate normal
 		randomMVN(mystream, candidateBeta, covMat, currentBeta);
-		printmatrix("candidateBeta.txt", candidateBeta);
+		// printmatrix("candidateBeta.txt", candidateBeta);
 
+		// Accept or reject candidate beta
+		score = logisticLogLikStar(n, y, x, candidateBeta) - logisticLogLikStar(n, y, x, currentBeta);
+		printf("\n score = %f \n", score);
 
-	// }
+		if(score >= 1.0) {
+
+			gsl_matrix_memcpy(currentBeta, candidateBeta);
+		
+		} else {
+
+			u = gsl_ran_glat(mystream, 0.0, 1.0);
+
+			if(log(u) <= score) {
+
+				gsl_matrix_memcpy(currentBeta, candidateBeta);
+
+			}
+		}
+
+		// Update chain
+		gsl_matrix_set(samples, k, 0, gsl_matrix_get(currentBeta, 0, 0));
+		gsl_matrix_set(samples, k, 1, gsl_matrix_get(currentBeta, 1, 0));
+
+	}
 
 
 	// Free memory
@@ -461,6 +485,7 @@ int main() {
 	printmatrix("betaMode.txt", betaMode);
 
 	gsl_matrix* samples = sampleMH(r, n, y, x, betaMode, 10);
+	printmatrix("MHsamples.txt", samples);
 
 	// Free memory
 	gsl_matrix_free(x);
