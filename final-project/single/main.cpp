@@ -18,7 +18,7 @@ double inverseLogit(double x) {
 // function for the computation of the Hessian
 double inverseLogit2(double x) {
 
-	return(exp(x)/pow(1.0+exp(x)), 2.0);
+	return(exp(x)/pow(1.0+exp(x), 2.0));
 }
 
 // Computes pi_i = P(y_i = 1 | x_i)
@@ -192,7 +192,7 @@ int main() {
 
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
-	gsl_matrix_set_zero(beta); // THINK THIS MIGHT BE AN INTEGER PROBLEM...
+	gsl_matrix_set_zero(beta);
 
 	// Initialize predictor and response columns
 	gsl_matrix* x = gsl_matrix_alloc(n, 1);
