@@ -377,7 +377,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	int k;
 
 	// Allocate matrix to store samples
-	samples = gsl_matrix_alloc(niter, 2);
+	gsl_matrix* samples = gsl_matrix_alloc(niter, 2);
 	gsl_matrix_set_zero(samples);
 
 	// Proposal distribution covariance matrix
@@ -387,7 +387,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	printmatrix("covMat.txt", covMat);
 
 	// Initial state
-	currentBeta = gsl_matrix_alloc(2,1);
+	gsl_matrix* currentBeta = gsl_matrix_alloc(2,1);
 	gsl_matrix_memcpy(currentBeta, betaMode);
 
 	gsl_matrix* candidateBeta = gsl_matrix_alloc(2, 1);
@@ -396,7 +396,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	// for(k=0; k<niter;k++) {
 
 		// printf("\n MC iter %d", (k+1));
-		randomMVN(r, candidateBeta, covMat, currentBeta);
+		randomMVN(mystream, candidateBeta, covMat, currentBeta);
 		printmatrix("candidateBeta.txt", candidateBeta);
 
 
@@ -453,7 +453,7 @@ int main() {
 	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
 	printmatrix("betaMode.txt", betaMode);
 
-	gsl_matrix* samples = sampleMH(r, n, y, x, 10);
+	gsl_matrix* samples = sampleMH(r, n, y, x, betaMode, 10);
 
 	// Free memory
 	gsl_matrix_free(x);
