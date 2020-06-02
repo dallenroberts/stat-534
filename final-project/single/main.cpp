@@ -100,7 +100,53 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 }
 
-double logisticLogLikStar(int y, int x, gsl_matrix* beta) {
+
+
+// Inverse logit function
+double inverseLogit(double x) {
+
+	return(exp(x)/(1+exp(x)));
+}
+
+// Computes pi_i = P(y_i = 1 | x_i)
+gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
+
+	gsl_matrix* x0 = gsl_matrix_alloc(n, 2);
+	gsl_matrix* out = gsl_matrix_alloc(n, 1);
+
+	int i;
+
+	// Initialize model matrix
+	for(i=0;i<n;i++) {
+		gsl_matrix_set(x0, i, 0, 1); // Intercept column
+		gsl_matrix_set(x0, i, 1, gsl_matrix_get(x, i, 0)); // Values of predictor
+	}
+
+	// Matrix multiply x0 by beta
+	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, x0, beta, 0.0, out);
+
+	// Inverse logit transform output
+	for(i=0;i<n;i++) {
+
+		gsl_matrix_set(out, i, 0, inverseLogit(gsl_matrix_get(out, i, 0)));
+	}
+
+
+	gsl_matrix_free(x0);
+
+	return(out);
+
+}
+
+// Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
+double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+
+	double logLik;
+	int i;
+
+	gsl_matrix* Pis = getPi(n, x, beta);
+	printmatrix("pis.txt", Pis);
+
 
 	printf("\n Inside logisticLogLikStar\n");
 	return(1);
@@ -131,11 +177,22 @@ int main() {
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
 
-	l_star = logisticLogLikStar(response, index, beta);
+	// Initialize predictor and response columns
+	gsl_matrix* x = gsl_matrix_alloc(n, 1);
+	gsl_matrix* y = gsl_matrix_alloc(n, 1);
+	for(i=0;i<n;i++) {
 
+		gsl_matrix_set(x, i, 0, gsl_matrix_get(data, i, index));
+		gsl_matrix_set(y, i, 0, gsl_matrix_get(data, i, response));
+
+	}
+
+	l_star = logisticLogLikStar(n, y, x, beta);
 
 
 	// Free memory
+	gsl_matrix_free(x);
+	gsl_matrix_free(y);
 	gsl_matrix_free(beta);
 	gsl_matrix_free(data);
 	
