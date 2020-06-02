@@ -110,7 +110,7 @@ double logisticLogLikStar(int y, int x, gsl_matrix* beta) {
 int main() {
 
 	int i;
-  	int n = 158;
+  	int n = 148;
   	int p = 61;
   	int response = 60; // Index of the response column
 	
