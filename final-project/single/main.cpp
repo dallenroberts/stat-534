@@ -240,12 +240,10 @@ void getHessian(int n, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* hessian) {
 }
 
 // Obtain the gradient for Newton-Raphson
-gsl_matrix* getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+void getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* gradient) {
 
 	int i;
 	double pi, xi, yi;
-
-	gsl_matrix* gradient = gsl_matrix_alloc(2, 1);
 
 	double g_00 = 0;
 	double g_10 = 0;
@@ -273,7 +271,6 @@ gsl_matrix* getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
 	gsl_matrix_free(Pi);
 
-	return(gradient);
 }
 
 // this function implements our own Newton-Raphson procedure
@@ -296,6 +293,9 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	// Matrix to store hessian
 	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
 
+	// Matrix to store gradient
+	gsl_matrix* gradient = gsl_matrix_alloc(2, 1);
+
 	// Matrix to store product of hessian inverse and gradient
 	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
 
@@ -310,7 +310,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// printmatrix("hessian.txt", hessian);
 	
 		// Get gradient
-		gsl_matrix* gradient = getGradient(n, y, x, beta);
+		getGradient(n, y, x, beta, gradient);
 		// printmatrix("gradient.txt", gradient);
 	
 		// Get hessian inverse
@@ -348,7 +348,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 			// IS THIS MEMORY FREE NECESSARY?
 			gsl_matrix_free(newBeta);
-			gsl_matrix_free(gradient);
 			gsl_matrix_free(hessianInv);
 			gsl_matrix_free(hessGrad);
 
@@ -362,7 +361,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	}
 
-	// MEMORY FREE HERE?
 	if(iter == maxIter) {
 
 		printf("\nNR algorithm reached maximum iterations.");
@@ -370,7 +368,10 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	}
 
+	// Free memory
 	gsl_matrix_free(hessian);
+	gsl_matrix_free(gradient);
+
 	return(beta);
 }
 
