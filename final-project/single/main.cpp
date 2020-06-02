@@ -156,13 +156,14 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	gsl_matrix* Pis = getPi(n, x, beta);
 	printmatrix("pis.txt", Pis);
 
+	// SOMETHING WRONG BELOW HERE.....
 	// Calculate logistic log likelihood
 	for(i=0;i<n;i++) {
 
 		yi = gsl_matrix_get(y, i, 0);
 		pi = gsl_matrix_get(Pis, i, 0);
 
-		logLik += yi*log(pi) + (1-yi)*log(1-pi);
+		logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
 	}
 
 	//Calculate sum of squared entries in beta matrix
@@ -173,7 +174,7 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 			printf("\n j=%d", j);
 			printf("\n beta[i,j]=%d", gsl_matrix_get(beta, i, j));
 
-			bsum += pow(gsl_matrix_get(beta, i, j), 2);
+			bsum += pow(gsl_matrix_get(beta, i, j), 2.0);
 		}
 	}
 
@@ -218,7 +219,6 @@ int main() {
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
-	printmatrix("beta.txt", beta);
 
 	// Initialize predictor and response columns
 	gsl_matrix* x = gsl_matrix_alloc(n, 1);
