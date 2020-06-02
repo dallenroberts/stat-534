@@ -489,7 +489,7 @@ double getLaplaceApprox(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMod
 
 	// Get Hessian and multiply by -1
 	gsl_matrix* hessian = gsl_matrix_alloc(2,2);
-	getHessian(n, x, betaMode, hessian)
+	getHessian(n, x, betaMode, hessian);
 	gsl_matrix_scale(hessian, -1.0);
 
 	// Calculate l*(beta_0, beta_1)
