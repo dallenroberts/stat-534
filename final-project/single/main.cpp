@@ -21,6 +21,7 @@ double inverseLogit2(double x) {
 	return(exp(x)/pow(1.0+exp(x), 2.0));
 }
 
+
 // Computes pi_i = P(y_i = 1 | x_i)
 gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 
@@ -50,6 +51,7 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 }
 
+
 // another function for the computation of the Hessian
 gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 
@@ -77,6 +79,48 @@ gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 	return(out);
 
+}
+
+// Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
+double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+
+	double logLik = 0;
+	int i,j;
+	double yi;
+	double pi;
+	double lstar;
+	double bsum = 0;
+
+	// getPis
+	gsl_matrix* Pis = getPi(n, x, beta);
+	printmatrix("pis.txt", Pis);
+
+	// Calculate logistic log likelihood
+	for(i=0;i<n;i++) {
+
+		yi = gsl_matrix_get(y, i, 0);
+		pi = gsl_matrix_get(Pis, i, 0);
+
+		logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
+	}
+
+	//Calculate sum of squared entries in beta matrix
+	for(i=0;i<(beta->size1);i++) {
+		for(j=0;j<(beta->size2);j++) {
+
+			bsum += pow(gsl_matrix_get(beta, i, j), 2.0);
+		}
+	}
+
+	// Calculate lstar
+	lstar = -1.0*log(2.0*M_PI) - 0.5*bsum + logLik;
+
+	// printf("\nlogLik = %f", logLik);
+	// printf("\nlstar = %f \n", lstar);
+
+	gsl_matrix_free(Pis);
+
+	return(lstar);
 }
 
 // Obtain the Hessian for Newton-Raphson
@@ -159,47 +203,75 @@ gsl_matrix* getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 	return(gradient);
 }
 
+gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
-// Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
-double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+	double currentLoglik;
+	double newLoglik;
+	int iter;
+	double tol = 0.00001;
 
-	double logLik = 0;
-	int i,j;
-	double yi;
-	double pi;
-	double lstar;
-	double bsum = 0;
+	// Initialize beta matrix
+	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
+	gsl_matrix_set_zero(beta);
 
-	// getPis
-	gsl_matrix* Pis = getPi(n, x, beta);
-	printmatrix("pis.txt", Pis);
+	gsl_matrix* newBeta = gsl_matrix_alloc(2, 1);
 
-	// Calculate logistic log likelihood
-	for(i=0;i<n;i++) {
+	// Calculate log likelihood l*
+	currentLoglik = logisticLogLikStar(n, y, x, beta);
+	iter = 0;
 
-		yi = gsl_matrix_get(y, i, 0);
-		pi = gsl_matrix_get(Pis, i, 0);
+	iter += 1;
 
-		logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
+	// Get Hessian
+	gsl_matrix* hessian = getHessian(n, x, beta);
+	// printmatrix("hessian.txt", hessian);
+
+	// Get gradient
+	gsl_matrix* gradient = getGradient(n, y, x, beta);
+	// printmatrix("gradient.txt", gradient);
+
+	// Get hessian inverse
+	gsl_matrix* hessianInv = inverse(hessian);
+	// printmatrix("hessianInv.txt", hessianInv);
+
+	// Get product of hessian inverse and gradient
+	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
+	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
+	// printmatrix("hessGrad.txt", hessGrad);
+
+	// Update new beta
+	gsl_matrix_memcpy(newBeta, beta);
+	gsl_matrix_sub(newBeta, hessGrad);
+	printmatrix("newBeta.txt", newBeta);
+
+	newLoglik = logisticLogLikStar(n, y, x, newBeta);
+	printf("\n newLoglik=%f", newLoglik);
+
+	// At each iteration the log-likelihood must increase
+	if(newLoglik < currentLoglik) {
+		printf("Coding error! Iteration made logLik worse");
+		exit(1);
 	}
 
-	//Calculate sum of squared entries in beta matrix
-	for(i=0;i<(beta->size1);i++) {
-		for(j=0;j<(beta->size2);j++) {
+	// Update beta
+	gsl_matrix_memcpy(beta, newBeta);
+	// printmatrix("beta.txt", beta);
 
-			bsum += pow(gsl_matrix_get(beta, i, j), 2.0);
-		}
+	// Stop if the log-likelihood does not improve by too much
+	if((newLoglik - currentLoglik) < tol) {
+		exit(1);
 	}
 
-	// Calculate lstar
-	lstar = -1.0*log(2.0*M_PI) - 0.5*bsum + logLik;
+	currentLoglik = newLoglik;
 
-	// printf("\nlogLik = %f", logLik);
-	printf("\nlstar = %f \n", lstar);
+	gsl_matrix_free(newBeta);
+	gsl_matrix_free(hessian);
+	gsl_matrix_free(gradient);
+	gsl_matrix_free(hessianInv);
+	gsl_matrix_free(hessGrad);
 
-	gsl_matrix_free(Pis);
+	return(beta);
 
-	return(lstar);
 }
 
 // Loads 534finalprojectdata.txt
@@ -220,19 +292,6 @@ int main() {
 	gsl_matrix_fscanf(f, data);
 	fclose(f);
 
-	// Calculate log likelihood l*
-	double currentLoglik;
-	double newLoglik;
-	int iter;
-	int maxIter = 1000;
-	double tol = 0.000001;
-
-	// Initialize beta matrix
-	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
-	gsl_matrix_set_zero(beta);
-
-	gsl_matrix* newBeta = gsl_matrix_alloc(2, 1);
-
 	// Initialize predictor and response columns
 	gsl_matrix* x = gsl_matrix_alloc(n, 1);
 	gsl_matrix* y = gsl_matrix_alloc(n, 1);
@@ -243,62 +302,15 @@ int main() {
 
 	}
 
-	currentLoglik = logisticLogLikStar(n, y, x, beta);
-	iter = 0;
-
-	iter += 1;
-
-	// Get Hessian
-	gsl_matrix* hessian = getHessian(n, x, beta);
-	printmatrix("hessian.txt", hessian);
-
-	// Get gradient
-	gsl_matrix* gradient = getGradient(n, y, x, beta);
-	printmatrix("gradient.txt", gradient);
-
-	// Get hessian inverse
-	gsl_matrix* hessianInv = inverse(hessian);
-	printmatrix("hessianInv.txt", hessianInv);
-
-	// Get product of hessian inverse and gradient
-	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
-	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
-	printmatrix("hessGrad.txt", hessGrad);
-
-	// Update new beta
-	gsl_matrix_memcpy(newBeta, beta);
-	gsl_matrix_sub(newBeta, hessGrad);
-	printmatrix("newBeta.txt", newBeta);
-
-	newLoglik = logisticLogLikStar(n, y, x, newBeta);
-	printf("\n newLoglik=%f", newLoglik);
-
-	// At each iteration the log-likelihood must increase
-	if(newLoglik < currentLoglik) {
-		printf("Coding error! Iteration made logLik worse");
-		exit(1);
-	}
-
-	// Update beta
-	gsl_matrix_memcpy(beta, newBeta);
-
-	// Stop if the log-likelihood does not improve by too much
-	if((newLoglik - currentLoglik) < tol) {
-		exit(1);
-	}
-
-	currentLoglik = newLoglik;
+	// Calculate beta modes using Newton-Raphson algorithm
+	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
+	printmatrix("betaMode.txt", betaMode);
 
 
 	// Free memory
 	gsl_matrix_free(x);
 	gsl_matrix_free(y);
-	gsl_matrix_free(beta);
-	gsl_matrix_free(newBeta);
-	gsl_matrix_free(hessian);
-	gsl_matrix_free(gradient);
-	gsl_matrix_free(hessianInv);
-	gsl_matrix_free(hessGrad);
+	gsl_matrix_free(betaMode);
 	gsl_matrix_free(data);
 	
   	return(1);
