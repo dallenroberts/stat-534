@@ -135,8 +135,6 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	double lstar;
 	double bsum = 0;
 
-	printf("\n Inside logisticLogLikStar\n");
-
 	// getPis
 	gsl_matrix* Pis = getPi(n, x, beta);
 	printmatrix("pis.txt", Pis);
