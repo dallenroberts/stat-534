@@ -264,19 +264,22 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	
 		// Stop if the log-likelihood does not improve by too much
 		if((newLoglik - currentLoglik) < tol) {
-			break;
+
+			gsl_matrix_free(newBeta);
+			gsl_matrix_free(hessian);
+			gsl_matrix_free(gradient);
+			gsl_matrix_free(hessianInv);
+			gsl_matrix_free(hessGrad);
+
+			return(beta);
 		}
 	
 		currentLoglik = newLoglik;
 
 	}
-	
-	gsl_matrix_free(newBeta);
-	gsl_matrix_free(hessian);
-	gsl_matrix_free(gradient);
-	gsl_matrix_free(hessianInv);
-	gsl_matrix_free(hessGrad);
 
+	// MEMORY FREE HERE?
+	
 	return(beta);
 
 }
