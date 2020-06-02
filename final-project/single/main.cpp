@@ -37,8 +37,8 @@ gsl_matrix* makeCholesky(gsl_matrix* K) {
 }
 
 // Samples from the multivariate normal distribution using the Cholesky decomposition
-// Inputs random number state mystream, gsl_matrix * samples to hold samples, 
-// gsl_matrix * sigma is the covariance matrix of the multivariate normal, and gsl_matrix*
+// Inputs random number state mystream, px1 gsl_matrix * samples to hold samples, 
+// gsl_matrix * sigma is the pxp covariance matrix of the multivariate normal, and gsl_matrix*
 // means is the px1 mean vector.
 void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_matrix* means) {
 
@@ -74,7 +74,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_ma
 		printmatrix("sigma.txt", sigma);
 		gsl_matrix_get_col(s, X, 0);
 		printmatrix("samples.txt", samples);
-		gsl_matrix_set_row(samples, i, s);
+		gsl_matrix_set_col(samples, i, s);
 
 	}
 
