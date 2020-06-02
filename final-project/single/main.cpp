@@ -276,7 +276,7 @@ int main() {
 	// At each iteration the log-likelihood must increase
 	if(newLoglik < currentLoglik) {
 		printf("Coding error! Iteration made logLik worse");
-		break;
+		exit(1);
 	}
 
 	// Update beta
@@ -284,7 +284,7 @@ int main() {
 
 	// Stop if the log-likelihood does not improve by too much
 	if((newLoglik - currentLoglik) < tol) {
-		break;
+		exit(1);
 	}
 
 	currentLoglik = newLoglik;
