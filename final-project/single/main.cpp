@@ -7,108 +7,18 @@
 #include <gsl/gsl_rng.h>
 #include "matrices.h"
 
-// Global variables
-// const double pi_const = 3.14159265358979323846264338327950288;
-
-// Function that inputs a pointer to a pxp GSL matrix covX and a pointer to a 
-// nxp data matrix X and calculates the pxp sample covariance matrix sigma
-// Outputs nothing, but updates the gsl_matrix stored at location covX
-void makeCovariance(gsl_matrix* covX, gsl_matrix* X) {
-
-	int i,j;
-	double cov;
-	gsl_vector_view a, b;
-
-	// Calculate covariance for each combination of columns
-	for(i=0;i<X->size2;i++) {
-
-		a = gsl_matrix_column(X, i);
-
-		for(j=i;j<X-> size2;j++) {
-          	b = gsl_matrix_column(X, j);
-          	cov = gsl_stats_covariance(a.vector.data, a.vector.stride, b.vector.data, b.vector.stride, a.vector.size);
-          	gsl_matrix_set(covX, i, j, cov);
-          	gsl_matrix_set(covX, j, i, cov);
-		}
-	}
-
-	return;
-
-}
-
-// Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
-// Note that the final matrix returned is lower triangular
-gsl_matrix* makeCholesky(gsl_matrix* K) {
-
-	int i, j;
-
-	gsl_matrix* cholesky = gsl_matrix_alloc(K->size1,K->size2);
-	if(GSL_SUCCESS!=gsl_matrix_memcpy(cholesky,K)) {
-		printf("GSL failed to copy a matrix.\n");
-		exit(1);
-	}
-
-	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(cholesky)) {
-		printf("GSL failed cholesky decomposition.\n");
-		exit(1);
-	}
-
-	// Retain only the lower triangle
-	for(i=0;i<cholesky->size1;i++) {
-		for(j=(i+1);j<cholesky->size2;j++) {
-			gsl_matrix_set(cholesky, i, j, 0.0);
-		}
-	}
-
-	return(cholesky);
-}
-
-// Samples from the multivariate normal distribution using the Cholesky decomposition
-// Inputs random number state mystream, gsl_matrix * samples to hold samples, and 
-// gsl_matrix * sigma is the covariance matrix of the multivariate normal
-void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
-
-	int i,j;
-	gsl_matrix* z = gsl_matrix_alloc(sigma->size2, 1);
-
-	// Calculate Cholesky decomposition
-	gsl_matrix* psi = makeCholesky(sigma);
-
-	// Draw samples
-	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix output by dgemm
-	gsl_vector* s = gsl_vector_alloc(sigma->size2); // vector to hold samples
-
-	for(i = 0; i < samples->size1; i++) {
-
-		// Generate p independent N(0,1) random numbers
-		for(j = 0; j < sigma->size2; j++) {
-
-			gsl_matrix_set(z, j, 0, gsl_ran_ugaussian(mystream));
-		}
-
-		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
-		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
-
-		// Store in samples matrix
-		gsl_matrix_get_col(s, X, 0);
-		gsl_matrix_set_row(samples, i, s);
-
-	}
-
-	// Free memory
-	gsl_matrix_free(psi);
-	gsl_matrix_free(z);
-	gsl_matrix_free(X);
-	gsl_vector_free(s);
-
-}
-
 
 
 // Inverse logit function
 double inverseLogit(double x) {
 
 	return(exp(x)/(1.0+exp(x)));
+}
+
+// function for the computation of the Hessian
+double inverseLogit2(double x) {
+
+	return(exp(x)/pow(1.0+exp(x)), 2.0);
 }
 
 // Computes pi_i = P(y_i = 1 | x_i)
@@ -140,6 +50,74 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 }
 
+// another function for the computation of the Hessian
+gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
+
+	gsl_matrix* x0 = gsl_matrix_alloc(n, 2);
+	gsl_matrix* out = gsl_matrix_alloc(n, 1);
+
+	int i;
+
+	// Initialize model matrix
+	for(i=0;i<n;i++) {
+		gsl_matrix_set(x0, i, 0, 1.0); // Intercept column
+		gsl_matrix_set(x0, i, 1, gsl_matrix_get(x, i, 0)); // Values of predictor
+	}
+
+	// Matrix multiply x0 by beta
+	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, x0, beta, 0.0, out);
+
+	// Inverse logit transform output
+	for(i=0;i<n;i++) {
+
+		gsl_matrix_set(out, i, 0, inverseLogit2(gsl_matrix_get(out, i, 0)));
+	}
+
+	gsl_matrix_free(x0);
+
+	return(out);
+
+}
+
+// Obtain the Hessian for Newton-Raphson
+gsl_matrix* getHessian(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+
+	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
+
+	double h_00 = 0;
+	double h_01 = 0;
+	double h_10 = 0;
+	double h_11 = 0;
+
+	// Get Pi2
+	gsl_matrix* Pi2 = getPi2(n, x, beta);
+
+	// Update hessian entries
+	for(i=0;i<n;i++) {
+
+		pi = gsl_matrix_get(Pis, i, 0);
+		xi = gsl_matrix_get(x, i, 0);
+
+		h_00 += pi;
+		h_01 += pi*xi;
+		h_11 += pi*pow(xi, 2.0);
+
+	}
+
+	h_00 += 1.0;
+	h_10 = h_01;
+	h_11 += 1.0;
+
+	gsl_matrix_set(hessian, 0, 0, -h_00);
+	gsl_matrix_set(hessian, 1, 0, -h_10);
+	gsl_matrix_set(hessian, 0, 1, -h_01);
+	gsl_matrix_set(hessian, 1, 1, -h_11);
+
+	return(hessian);
+
+}
+
+
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
 double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
@@ -169,19 +147,14 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	for(i=0;i<(beta->size1);i++) {
 		for(j=0;j<(beta->size2);j++) {
 
-			printf("\n i=%d", i);
-			printf("\n j=%d", j);
-			printf("\n beta[i,j]=%f", gsl_matrix_get(beta, i, j));
-
 			bsum += pow(gsl_matrix_get(beta, i, j), 2.0);
 		}
 	}
 
-	printf("\n bsum=%f", bsum);
-
+	// Calculate lstar
 	lstar = -1.0*log(2.0*M_PI) - 0.5*bsum + logLik;
 
-	printf("\nlogLik = %f", logLik);
+	// printf("\nlogLik = %f", logLik);
 	printf("\nlstar = %f \n", lstar);
 
 	gsl_matrix_free(Pis);
@@ -208,7 +181,9 @@ int main() {
 	fclose(f);
 
 	// Calculate log likelihood l*
-	double l_star;
+	double currentLoglik;
+	int iter;
+	int maxIter = 1000;
 
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
@@ -224,7 +199,13 @@ int main() {
 
 	}
 
-	l_star = logisticLogLikStar(n, y, x, beta);
+	currentLoglik = logisticLogLikStar(n, y, x, beta);
+	iter = 0;
+
+	iter += 1;
+
+	gsl_matrix* hessian = getHessian(n, y, x, beta);
+	printmatrix("hessian.txt", hessian);
 
 
 	// Free memory
