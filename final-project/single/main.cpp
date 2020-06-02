@@ -201,12 +201,10 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 }
 
 // Obtain the Hessian for Newton-Raphson
-gsl_matrix* getHessian(int n, gsl_matrix* x, gsl_matrix* beta) {
+void getHessian(int n, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* hessian) {
 
 	int i;
 	double pi, xi;
-
-	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
 
 	double h_00 = 0;
 	double h_01 = 0;
@@ -238,8 +236,6 @@ gsl_matrix* getHessian(int n, gsl_matrix* x, gsl_matrix* beta) {
 	gsl_matrix_set(hessian, 1, 1, -h_11);
 
 	gsl_matrix_free(Pi2);
-
-	return(hessian);
 
 }
 
@@ -297,6 +293,9 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	// Calculate log likelihood l*
 	currentLoglik = logisticLogLikStar(n, y, x, beta);
 
+	// Matrix to store hessian
+	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
+
 	// Matrix to store product of hessian inverse and gradient
 	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
 
@@ -307,7 +306,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// printf("\niter=%d", iter);
 
 		// Get Hessian
-		gsl_matrix* hessian = getHessian(n, x, beta);
+		getHessian(n, x, beta, hessian);
 		// printmatrix("hessian.txt", hessian);
 	
 		// Get gradient
@@ -349,12 +348,10 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 			// IS THIS MEMORY FREE NECESSARY?
 			gsl_matrix_free(newBeta);
-			gsl_matrix_free(hessian);
 			gsl_matrix_free(gradient);
 			gsl_matrix_free(hessianInv);
 			gsl_matrix_free(hessGrad);
 
-			return(beta);
 		} else {
 
 			currentLoglik = newLoglik;
@@ -372,6 +369,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	}
 
+	gsl_matrix_free(hessian);
+	return(beta);
 }
 
 // sampleMH performs Metropolis-Hastings sampling from the posterior distribution
@@ -389,7 +388,9 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	gsl_matrix_set_zero(samples);
 
 	// Proposal distribution covariance matrix
-	gsl_matrix* hessian = getHessian(n, x, betaMode);
+	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
+	getHessian(n, x, betaMode, hessian);
+
 	gsl_matrix* covMat = inverse(hessian);
 	gsl_matrix_scale(covMat, -1.0);
 	printmatrix("covMat.txt", covMat);
@@ -434,8 +435,8 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 	}
 
-
 	// Free memory
+	gsl_matrix_free(hessian);
 	gsl_matrix_free(covMat);
 	gsl_matrix_free(currentBeta);
 	gsl_matrix_free(candidateBeta);
@@ -486,9 +487,7 @@ int main() {
 	// Initialize random number generator
   	const gsl_rng_type* T;
   	gsl_rng* r;
-	
   	gsl_rng_env_setup();
-	
   	T = gsl_rng_default;
   	r = gsl_rng_alloc(T);
 
@@ -514,8 +513,15 @@ int main() {
 	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
 	printmatrix("betaMode.txt", betaMode);
 
+	// Calculate posterior means for betas
 	gsl_matrix* sampleMeans = getPosteriorMeans(r, n, y, x, betaMode, 1000);
 	printmatrix("sampleMeans.txt", sampleMeans);
+
+	// Calculate log marginal likelihood using LaPlace approximation
+
+	// Calculate log marginal likelihood using Monte Carlo integration
+
+
 	
 	// Free memory
 	gsl_matrix_free(x);
