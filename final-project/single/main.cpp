@@ -401,8 +401,9 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 	gsl_matrix* candidateBeta = gsl_matrix_alloc(2, 1);
 
 	// Start Markov chain
+	printf("\n Starting Metropolis-Hastings Algorithm...\n");
 	for(k=0; k<niter;k++) {
-		printf("\n MC iter %d", (k+1));
+		// printf("\n MC iter %d", (k+1));
 		
 		// Draw candidate beta from multivariate normal
 		randomMVN(mystream, candidateBeta, covMat, currentBeta);
@@ -410,7 +411,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 		// Accept or reject candidate beta
 		score = logisticLogLikStar(n, y, x, candidateBeta) - logisticLogLikStar(n, y, x, currentBeta);
-		printf("\n score = %f \n", score);
+		// printf("\n score = %f \n", score);
 
 		if(score >= 1.0) {
 
@@ -484,14 +485,28 @@ int main() {
 	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
 	printmatrix("betaMode.txt", betaMode);
 
-	gsl_matrix* samples = sampleMH(r, n, y, x, betaMode, 10);
+	// Simulate 1000 samples from the posterior distribution using Metropolis-Hastings
+	gsl_matrix* samples = sampleMH(r, n, y, x, betaMode, 1000);
 	printmatrix("MHsamples.txt", samples);
 
+	// Calculate sample means
+	gsl_matrix* sampleMeans = gsl_matrix_alloc(2, 1);
+	gsl_vector_view a;
+	for(i=0; i<(samples->size2); i++) {
+
+		a = gsl_matrix_column(samples, i);
+		gsl_matrix_set(sampleMeans, i, 0, 
+			gsl_stats_mean(a.vector.data, a.vector.stride, (samples->size1)));
+
+	}
+	printmatrix("sampleMeans.txt", sampleMeans);
+	
 	// Free memory
 	gsl_matrix_free(x);
 	gsl_matrix_free(y);
 	gsl_matrix_free(betaMode);
 	gsl_matrix_free(samples);
+	gsl_matrix_free(sampleMeans);
 	gsl_matrix_free(data);
 	gsl_rng_free(r);
 	
