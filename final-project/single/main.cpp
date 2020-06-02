@@ -296,10 +296,12 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	// Matrix to store gradient
 	gsl_matrix* gradient = gsl_matrix_alloc(2, 1);
 
+	// Matrix to store the hessian inverse
+	gsl_matrix* hessianInv = gsl_matrix_alloc(2, 2);
+
 	// Matrix to store product of hessian inverse and gradient
 	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
 
-	// Infinite loop unless we stop it someplace inside
 	while(iter < maxIter) {
 
 		iter += 1;
@@ -314,7 +316,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// printmatrix("gradient.txt", gradient);
 	
 		// Get hessian inverse
-		gsl_matrix* hessianInv = inverse(hessian);
+		inverse2(hessian, hessianInv);
+
 		// printmatrix("hessianInv.txt", hessianInv);
 	
 		// Get product of hessian inverse and gradient
@@ -348,8 +351,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 			// IS THIS MEMORY FREE NECESSARY?
 			gsl_matrix_free(newBeta);
-			gsl_matrix_free(hessianInv);
-			gsl_matrix_free(hessGrad);
 
 			break;
 
@@ -371,6 +372,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	// Free memory
 	gsl_matrix_free(hessian);
 	gsl_matrix_free(gradient);
+	gsl_matrix_free(hessianInv);
+	gsl_matrix_free(hessGrad);
 
 	return(beta);
 }

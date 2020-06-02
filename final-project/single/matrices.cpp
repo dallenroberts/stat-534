@@ -100,6 +100,38 @@ gsl_matrix* inverse(gsl_matrix* K)
 	return(inverse);
 }
 
+//computes the inverse of a positive definite matrix
+//the function modifies the gsl matrix* passed in the
+// second argument
+void inverse2(gsl_matrix* K, gsl_matrix* out)
+{
+	int j;
+	
+	gsl_matrix* copyK = gsl_matrix_alloc(K->size1,K->size1);
+	if(GSL_SUCCESS!=gsl_matrix_memcpy(copyK,K))
+	{
+		printf("GSL failed to copy a matrix.\n");
+		exit(1);
+	}
+	
+	gsl_permutation *myperm = gsl_permutation_alloc(K->size1);
+	
+	if(GSL_SUCCESS!=gsl_linalg_LU_decomp(copyK,myperm,&j))
+	{
+		printf("GSL failed LU decomposition.\n");
+		exit(1);
+	}
+	if(GSL_SUCCESS!=gsl_linalg_LU_invert(copyK,myperm,out))
+	{
+		printf("GSL failed matrix inversion.\n");
+		exit(1);
+	}
+	gsl_permutation_free(myperm);
+	gsl_matrix_free(copyK);
+
+	
+}
+
 //creates a submatrix of matrix M
 //the indices of the rows and columns to be selected are
 //specified in the last four arguments of this function
