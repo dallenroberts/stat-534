@@ -159,7 +159,8 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	for(i=0;i<n;i++) {
 
 		printf("\n i=%d", i);
-		printf("\n pi=%d", gsl_matrix_get(Pis, i, 0));
+		pi = gsl_matrix_get(Pis, i, 0);
+		printf("\n pi=%f", pi);
 
 	}
 
