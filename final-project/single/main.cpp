@@ -8,7 +8,7 @@
 #include "matrices.h"
 
 // Global variables
-const double pi_const = 3.14159265358979323846264338327950288;
+// const double pi_const = 3.14159265358979323846264338327950288;
 
 // Function that inputs a pointer to a pxp GSL matrix covX and a pointer to a 
 // nxp data matrix X and calculates the pxp sample covariance matrix sigma
@@ -156,56 +156,37 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	gsl_matrix* Pis = getPi(n, x, beta);
 	printmatrix("pis.txt", Pis);
 
+	// Calculate logistic log likelihood
 	for(i=0;i<n;i++) {
 
-		printf("\n i=%d", i);
+		yi = gsl_matrix_get(y, i, 0);
 		pi = gsl_matrix_get(Pis, i, 0);
-		printf("\n pi=%f", pi);
 
+		logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
 	}
 
-	// SOMETHING WRONG BELOW HERE.....
-	// Calculate logistic log likelihood
-	// for(i=0;i<n;i++) {
+	//Calculate sum of squared entries in beta matrix
+	for(i=0;i<(beta->size1);i++) {
+		for(j=0;j<(beta->size2);j++) {
 
-	// 	printf("\n i=%d", i);
+			printf("\n i=%d", i);
+			printf("\n j=%d", j);
+			printf("\n beta[i,j]=%f", gsl_matrix_get(beta, i, j));
 
-	// 	yi = gsl_matrix_get(y, i, 0);
-	// 	pi = gsl_matrix_get(Pis, i, 0);
+			bsum += pow(gsl_matrix_get(beta, i, j), 2.0);
+		}
+	}
 
-	// 	printf("\n yi=%d", yi);
-	// 	printf("\n pi=%d", pi);
+	printf("\n bsum=%f", bsum);
 
-	// 	logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
-	// }
+	lstar = -1.0*log(2.0*M_PI) - 0.5*bsum + logLik;
 
-	// //Calculate sum of squared entries in beta matrix
-	// for(i=0;i<(beta->size1);i++) {
-	// 	for(j=0;j<(beta->size2);j++) {
+	printf("\nlogLik = %f", logLik);
+	printf("\nlstar = %f \n", lstar);
 
-	// 		printf("\n i=%d", i);
-	// 		printf("\n j=%d", j);
-	// 		printf("\n beta[i,j]=%d", gsl_matrix_get(beta, i, j));
+	gsl_matrix_free(Pis);
 
-	// 		bsum += pow(gsl_matrix_get(beta, i, j), 2.0);
-	// 	}
-	// }
-
-	// printf("\n bsum=%d", bsum);
-
-	// double con;
-	// con = log(6.5);
-	// printf("\n con=%d", con);
-
-	// lstar = -1.0*log(2.0*pi_const) - 0.5*bsum + logLik;
-
-	// printf("\nlogLik = %d", logLik);
-	// printf("\nlstar = %d \n", lstar);
-
-	// gsl_matrix_free(Pis);
-
-	// return(lstar);
-	return(1);
+	return(lstar);
 }
 
 // Loads 534finalprojectdata.txt
