@@ -266,7 +266,7 @@ int main() {
 	printmatrix("hessGrad.txt", hessGrad);
 
 	// Update new beta
-	newBeta = beta;
+	gsl_matrix_memcpy(newBeta, beta);
 	gsl_matrix_sub(newBeta, hessGrad);
 	printmatrix("newBeta.txt", newBeta);
 
@@ -280,7 +280,7 @@ int main() {
 	}
 
 	// Update beta
-	beta = newBeta;
+	gsl_matrix_memcpy(beta, newBeta);
 
 	// Stop if the log-likelihood does not improve by too much
 	if((newLoglik - currentLoglik) < tol) {
