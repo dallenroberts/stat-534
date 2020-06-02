@@ -220,49 +220,58 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	currentLoglik = logisticLogLikStar(n, y, x, beta);
 	iter = 0;
 
-	iter += 1;
-
-	// Get Hessian
-	gsl_matrix* hessian = getHessian(n, x, beta);
-	// printmatrix("hessian.txt", hessian);
-
-	// Get gradient
-	gsl_matrix* gradient = getGradient(n, y, x, beta);
-	// printmatrix("gradient.txt", gradient);
-
-	// Get hessian inverse
-	gsl_matrix* hessianInv = inverse(hessian);
-	// printmatrix("hessianInv.txt", hessianInv);
-
-	// Get product of hessian inverse and gradient
+	// Matrix to store product of hessian inverse and gradient
 	gsl_matrix* hessGrad = gsl_matrix_alloc(2, 1);
-	gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
-	// printmatrix("hessGrad.txt", hessGrad);
 
-	// Update new beta
-	gsl_matrix_memcpy(newBeta, beta);
-	gsl_matrix_sub(newBeta, hessGrad);
-	printmatrix("newBeta.txt", newBeta);
+	// Infinite loop unless we stop it someplace inside
+	while(iter < maxIter) {
 
-	newLoglik = logisticLogLikStar(n, y, x, newBeta);
-	printf("\n newLoglik=%f", newLoglik);
+		iter += 1;
+		printf("\niter=%d", i);
 
-	// At each iteration the log-likelihood must increase
-	if(newLoglik < currentLoglik) {
-		printf("Coding error! Iteration made logLik worse");
-		exit(1);
+		// Get Hessian
+		gsl_matrix* hessian = getHessian(n, x, beta);
+		// printmatrix("hessian.txt", hessian);
+	
+		// Get gradient
+		gsl_matrix* gradient = getGradient(n, y, x, beta);
+		// printmatrix("gradient.txt", gradient);
+	
+		// Get hessian inverse
+		gsl_matrix* hessianInv = inverse(hessian);
+		// printmatrix("hessianInv.txt", hessianInv);
+	
+		// Get product of hessian inverse and gradient
+		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
+		// printmatrix("hessGrad.txt", hessGrad);
+	
+		// Update new beta
+		gsl_matrix_memcpy(newBeta, beta);
+		gsl_matrix_sub(newBeta, hessGrad);
+		printmatrix("newBeta.txt", newBeta);
+	
+		newLoglik = logisticLogLikStar(n, y, x, newBeta);
+		printf("\n newLoglik=%f", newLoglik);
+	
+		// At each iteration the log-likelihood must increase
+		if(newLoglik < currentLoglik) {
+			printf("Coding error! Iteration made logLik worse");
+			exit(1);
+		}
+	
+		// Update beta
+		gsl_matrix_memcpy(beta, newBeta);
+		// printmatrix("beta.txt", beta);
+	
+		// Stop if the log-likelihood does not improve by too much
+		if((newLoglik - currentLoglik) < tol) {
+			break;
+		}
+	
+		currentLoglik = newLoglik;
+
 	}
-
-	// Update beta
-	gsl_matrix_memcpy(beta, newBeta);
-	// printmatrix("beta.txt", beta);
-
-	// Stop if the log-likelihood does not improve by too much
-	if((newLoglik - currentLoglik) < tol) {
-		exit(1);
-	}
-
-	currentLoglik = newLoglik;
+	
 
 	gsl_matrix_free(newBeta);
 	gsl_matrix_free(hessian);
