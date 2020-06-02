@@ -165,19 +165,19 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 		logLik += yi*log(pi) + (1-yi)*log(1-pi);
 	}
 
-	// // Calculate sum of squared entries in beta matrix
-	// for(i=0;i<beta->size1;i++) {
-	// 	for(j=0;j<beta->size2;j++) {
+	// Calculate sum of squared entries in beta matrix
+	for(i=0;i<beta->size1;i++) {
+		for(j=0;j<beta->size2;j++) {
 
-	// 		bsum += pow(gsl_matrix_get(beta, i, j), 2);
-	// 	}
-	// }
+			bsum += pow(gsl_matrix_get(beta, i, j), 2);
+		}
+	}
 
-	// printf("\n bsum=%d", bsum);
+	printf("\n bsum=%d", bsum);
 
-	// double con;
-	// con = -log(2.0*pi_const);
-	// printf("\n con=%d", con);
+	double con;
+	con = -log(6.5);
+	printf("\n con=%d", con);
 
 	// lstar = -1.0*log(2.0*pi_const) - 0.5*bsum + logLik;
 
