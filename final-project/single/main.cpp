@@ -226,7 +226,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	while(iter < maxIter) {
 
 		iter += 1;
-		printf("\niter=%d", iter);
+		// printf("\niter=%d", iter);
 
 		// Get Hessian
 		gsl_matrix* hessian = getHessian(n, x, beta);
@@ -247,10 +247,10 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// Update new beta
 		gsl_matrix_memcpy(newBeta, beta);
 		gsl_matrix_sub(newBeta, hessGrad);
-		printmatrix("newBeta.txt", newBeta);
+		// printmatrix("newBeta.txt", newBeta);
 	
 		newLoglik = logisticLogLikStar(n, y, x, newBeta);
-		printf("\n newLoglik=%f", newLoglik);
+		// printf("\n newLoglik=%f", newLoglik);
 	
 		// At each iteration the log-likelihood must increase
 		if(newLoglik < currentLoglik) {
@@ -265,7 +265,9 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// Stop if the log-likelihood does not improve by too much
 		if((newLoglik - currentLoglik) < tol) {
 
-			printf("\n NR algorithm converged after %d iterations\n", iter);
+			printf("\n NR algorithm converged after %d iterations.", iter);
+			printf("Log-likelihood is %f \n", currentLoglik);
+
 
 			// IS THIS MEMORY FREE NECESSARY?
 			gsl_matrix_free(newBeta);
@@ -286,7 +288,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	// MEMORY FREE HERE?
 	if(iter == maxIter) {
 
-		printf("\nNR algorithm reached maximum iterations\n");
+		printf("\nNR algorithm reached maximum iterations.");
+		printf("Log-likelihood is %f \n", currentLoglik);
 		return(beta);
 
 	}
