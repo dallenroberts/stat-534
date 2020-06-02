@@ -404,11 +404,11 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 
 	// Free memory
-	gsl_matrix_free(samples);
 	gsl_matrix_free(covMat);
 	gsl_matrix_free(currentBeta);
 	gsl_matrix_free(candidateBeta);
 
+	return(samples);
 
 }
 
