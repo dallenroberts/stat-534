@@ -80,7 +80,7 @@ gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 }
 
 // Obtain the Hessian for Newton-Raphson
-gsl_matrix* getHessian(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+gsl_matrix* getHessian(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 	int i;
 	double pi, xi;
@@ -122,7 +122,42 @@ gsl_matrix* getHessian(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
 }
 
-//gsl_matrix* getGradient()
+// Obtain the gradient for Newton-Raphson
+gsl_matrix* getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+
+	int i;
+	double pi, xi, yi;
+
+	gsl_matrix* gradient = gsl_matrix_alloc(2, 1);
+
+	double g_00 = 0;
+	double g_10 = 0;
+
+	// Get Pis
+	gsl_matrix* Pi = getPi(n, x, beta);
+
+	// Update gradient entries
+	for(i=0;i<n;i++) {
+
+		pi = gsl_matrix_get(Pi, i, 0);
+		xi = gsl_matrix_get(x, i, 0);
+		yi = gsl_matrix_get(y, i, 0);
+
+		g_00 += (yi - pi);
+		g_10 += (yi - pi)*xi;
+
+	}
+
+	g_00 -= gsl_matrix_get(beta, 0, 0);
+	g_10 -= gsl_matrix_get(beta, 0, 1);
+
+	gsl_matrix_set(gradient, 0, 0, g_00);
+	gsl_matrix_set(gradient, 1, 0, g_10);
+
+	gsl_matrix_free(Pi);
+
+	return(gradient);
+}
 
 
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
@@ -209,14 +244,19 @@ int main() {
 
 	iter += 1;
 
-	gsl_matrix* hessian = getHessian(n, y, x, beta);
+	gsl_matrix* hessian = getHessian(n, x, beta);
 	printmatrix("hessian.txt", hessian);
+
+	gsl_matrix* gradient = getGradient(n, y, x, beta);
+	printmatrix("gradient.txt", gradient);
 
 
 	// Free memory
 	gsl_matrix_free(x);
 	gsl_matrix_free(y);
 	gsl_matrix_free(beta);
+	gsl_matrix_free(hessian);
+	gsl_matrix_free(gradient);
 	gsl_matrix_free(data);
 	
   	return(1);
