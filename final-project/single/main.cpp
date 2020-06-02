@@ -179,7 +179,7 @@ double logisticLogLikStar(int n, gsl_matrix* resp, gsl_matrix* x, gsl_matrix* be
 	con = -log(2.0*pi_const);
 	printf("\n con=%d", con);
 
-	lstar = -log(2.0*pi_const) - 0.5*bsum + logLik;
+	lstar = -1.0*log(2.0*pi_const) - 0.5*bsum + logLik;
 
 	printf("\nlogLik = %d", logLik);
 	printf("\nlstar = %d \n", lstar);
