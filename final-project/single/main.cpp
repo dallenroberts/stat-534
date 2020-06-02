@@ -9,6 +9,77 @@
 
 
 
+// Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
+// Note that the final matrix returned is lower triangular
+gsl_matrix* makeCholesky(gsl_matrix* K) {
+
+	int i, j;
+
+	gsl_matrix* cholesky = gsl_matrix_alloc(K->size1,K->size2);
+	if(GSL_SUCCESS!=gsl_matrix_memcpy(cholesky,K)) {
+		printf("GSL failed to copy a matrix.\n");
+		exit(1);
+	}
+
+	if(GSL_SUCCESS!=gsl_linalg_cholesky_decomp(cholesky)) {
+		printf("GSL failed cholesky decomposition.\n");
+		exit(1);
+	}
+
+	// Retain only the lower triangle
+	for(i=0;i<cholesky->size1;i++) {
+		for(j=(i+1);j<cholesky->size2;j++) {
+			gsl_matrix_set(cholesky, i, j, 0.0);
+		}
+	}
+
+	return(cholesky);
+}
+
+// Samples from the multivariate normal distribution using the Cholesky decomposition
+// Inputs random number state mystream, gsl_matrix * samples to hold samples, 
+// gsl_matrix * sigma is the covariance matrix of the multivariate normal, and gsl_matrix*
+// means is the px1 mean vector.
+void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_matrix* means) {
+
+	int i,j;
+	gsl_matrix* z = gsl_matrix_alloc(sigma->size2, 1);
+
+	// Calculate Cholesky decomposition
+	gsl_matrix* psi = makeCholesky(sigma);
+
+	// Draw samples
+	gsl_matrix* X = gsl_matrix_alloc(sigma->size2, 1); // px1 matrix output by dgemm
+	gsl_vector* s = gsl_vector_alloc(sigma->size2); // vector to hold samples
+
+	for(i = 0; i < samples->size1; i++) {
+
+		// Generate p independent N(0,1) random numbers
+		for(j = 0; j < sigma->size2; j++) {
+
+			gsl_matrix_set(z, j, 0, gsl_ran_ugaussian(mystream));
+		}
+
+		// Calculate matrix product X = psi*Z. Note that this is a px1 matrix
+		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, psi, z, 0.0, X);
+
+		// Add mean vector
+		gsl_matrix_add(X, means);
+
+		// Store in samples matrix
+		gsl_matrix_get_col(s, X, 0);
+		gsl_matrix_set_row(samples, i, s);
+
+	}
+
+	// Free memory
+	gsl_matrix_free(psi);
+	gsl_matrix_free(z);
+	gsl_matrix_free(X);
+	gsl_vector_free(s);
+
+}
+
 // Inverse logit function
 double inverseLogit(double x) {
 
@@ -203,6 +274,7 @@ gsl_matrix* getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 	return(gradient);
 }
 
+// this function implements our own Newton-Raphson procedure
 gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	double currentLoglik;
@@ -266,7 +338,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		if((newLoglik - currentLoglik) < tol) {
 
 			printf("\n NR algorithm converged after %d iterations.", iter);
-			printf("Log-likelihood is %f \n", currentLoglik);
+			printf(" Log-likelihood is %f \n", currentLoglik);
 
 
 			// IS THIS MEMORY FREE NECESSARY?
@@ -289,10 +361,54 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	if(iter == maxIter) {
 
 		printf("\nNR algorithm reached maximum iterations.");
-		printf("Log-likelihood is %f \n", currentLoglik);
+		printf(" Log-likelihood is %f \n", currentLoglik);
 		return(beta);
 
 	}
+
+}
+
+// sampleMH performs Metropolis-Hastings sampling from the posterior distribution
+// P(beta0, beta1 | D) of Bayesian univariate logistic regression. It returns
+// a matrix with two columns (beta0 and beta1) and niter rows (one for each)
+// sample.
+gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMode, int niter) {
+
+	int k;
+
+	// Allocate matrix to store samples
+	samples = gsl_matrix_alloc(niter, 2);
+	gsl_matrix_set_zero(samples);
+
+	// Proposal distribution covariance matrix
+	gsl_matrix* hessian = getHessian(n, x, betaMode);
+	gsl_matrix* covMat = inverse(hessian);
+	gsl_matrix_scale(covMat, -1.0);
+	printmatrix("covMat.txt", covMat);
+
+	// Initial state
+	currentBeta = gsl_matrix_alloc(2,1);
+	gsl_matrix_memcpy(currentBeta, betaMode);
+
+	gsl_matrix* candidateBeta = gsl_matrix_alloc(2, 1);
+
+	// Start Markov chain
+	// for(k=0; k<niter;k++) {
+
+		// printf("\n MC iter %d", (k+1));
+		randomMVN(r, candidateBeta, covMat, currentBeta);
+		printmatrix("candidateBeta.txt", candidateBeta);
+
+
+	// }
+
+
+	// Free memory
+	gsl_matrix_free(samples);
+	gsl_matrix_free(covMat);
+	gsl_matrix_free(currentBeta);
+	gsl_matrix_free(candidateBeta);
+
 
 }
 
@@ -305,6 +421,15 @@ int main() {
   	int response = 60; // Index of the response column
 	
 	int index = 0;
+
+	// Initialize random number generator
+  	const gsl_rng_type* T;
+  	gsl_rng* r;
+	
+  	gsl_rng_env_setup();
+	
+  	T = gsl_rng_default;
+  	r = gsl_rng_alloc(T);
 
   	// Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
   	// The first 60 columns are associated with 60 explanatory variables X, 
@@ -328,12 +453,15 @@ int main() {
 	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
 	printmatrix("betaMode.txt", betaMode);
 
+	gsl_matrix* samples = sampleMH(r, n, y, x, 10);
 
 	// Free memory
 	gsl_matrix_free(x);
 	gsl_matrix_free(y);
 	gsl_matrix_free(betaMode);
+	gsl_matrix_free(samples);
 	gsl_matrix_free(data);
+	gsl_rng_free(r);
 	
   	return(1);
 }
