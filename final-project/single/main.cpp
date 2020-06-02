@@ -82,6 +82,9 @@ gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 // Obtain the Hessian for Newton-Raphson
 gsl_matrix* getHessian(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
+	int i;
+	double pi, xi;
+
 	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
 
 	double h_00 = 0;
@@ -95,7 +98,7 @@ gsl_matrix* getHessian(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 	// Update hessian entries
 	for(i=0;i<n;i++) {
 
-		pi = gsl_matrix_get(Pis, i, 0);
+		pi = gsl_matrix_get(Pi2, i, 0);
 		xi = gsl_matrix_get(x, i, 0);
 
 		h_00 += pi;
@@ -113,9 +116,13 @@ gsl_matrix* getHessian(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 	gsl_matrix_set(hessian, 0, 1, -h_01);
 	gsl_matrix_set(hessian, 1, 1, -h_11);
 
+	gsl_matrix_free(Pi2);
+
 	return(hessian);
 
 }
+
+//gsl_matrix* getGradient()
 
 
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
