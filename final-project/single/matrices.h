@@ -25,6 +25,7 @@ void printmatrix(char* filename,gsl_matrix* m);
 gsl_matrix* transposematrix(gsl_matrix* m);
 void matrixproduct(gsl_matrix* m1,gsl_matrix* m2,gsl_matrix* m);
 gsl_matrix* inverse(gsl_matrix* K);
+void inverse2(gsl_matrix* K, gsl_matrix* out);
 gsl_matrix* MakeSubmatrix(gsl_matrix* M,
 			  int* IndRow,int lenIndRow,
 			  int* IndColumn,int lenIndColumn);

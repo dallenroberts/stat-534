@@ -129,7 +129,6 @@ void inverse2(gsl_matrix* K, gsl_matrix* out)
 	gsl_permutation_free(myperm);
 	gsl_matrix_free(copyK);
 
-	
 }
 
 //creates a submatrix of matrix M
