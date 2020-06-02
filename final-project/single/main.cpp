@@ -108,7 +108,7 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 // Inverse logit function
 double inverseLogit(double x) {
 
-	return(exp(x)/(1+exp(x)));
+	return(exp(x)/(1.0+exp(x)));
 }
 
 // Computes pi_i = P(y_i = 1 | x_i)
@@ -121,7 +121,7 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 	// Initialize model matrix
 	for(i=0;i<n;i++) {
-		gsl_matrix_set(x0, i, 0, 1); // Intercept column
+		gsl_matrix_set(x0, i, 0, 1.0); // Intercept column
 		gsl_matrix_set(x0, i, 1, gsl_matrix_get(x, i, 0)); // Values of predictor
 	}
 
