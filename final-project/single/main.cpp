@@ -418,7 +418,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 		
 		} else {
 
-			u = gsl_ran_glat(mystream, 0.0, 1.0);
+			u = gsl_ran_flat(mystream, 0.0, 1.0);
 
 			if(log(u) <= score) {
 
