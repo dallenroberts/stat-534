@@ -1,7 +1,7 @@
 // Allen Roberts
-// May 27, 2020
+// June 1, 2020
 // Stat 534
-// Homework 7
+// Final Project
 
 #include <stdio.h>
 #include <gsl/gsl_rng.h>
@@ -100,50 +100,44 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples,gsl_matrix* sigma) {
 
 }
 
-// Loads erdata, calculates covariance matrix, draws 10,000 samples from the MVN using the 
-// Cholesky decomposition, then calculates the sample covariance matrix and prints to
-// .txt file
+double logisticLogLikStar(int y, int x, double beta) {
+
+	printf("\n Inside logisticLogLikStar\n");
+	return(1)
+}
+
+// Loads 534finalprojectdata.txt
 int main() {
 
 	int i;
   	int n = 158;
-  	int p = 51;
-  	int nsamples = 10000;
-
-	// Initialize random number generator
-  	const gsl_rng_type* T;
-  	gsl_rng* r;
+  	int p = 61;
+  	int response = 60; // Index of the response column
 	
-  	gsl_rng_env_setup();
-	
-  	T = gsl_rng_default;
-  	r = gsl_rng_alloc(T);
+	int index = 0;
 
-  	// Load erdata.txt
-  	gsl_matrix* X = gsl_matrix_alloc(n, p);
-	FILE * f = fopen("erdata.txt", "r");
-	gsl_matrix_fscanf(f, X);
+  	// Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
+  	// The first 60 columns are associated with 60 explanatory variables X, 
+  	// while column 61 (the last column) corresponds with the response binary variable Y
+  	gsl_matrix* data = gsl_matrix_alloc(n, p);
+	FILE * f = fopen("534finalprojectdata.txt", "r");
+	gsl_matrix_fscanf(f, data;
 	fclose(f);
 
-	// Calculate covariance matrix
-	gsl_matrix* covX = gsl_matrix_alloc(p, p);
-	makeCovariance(covX,X);
-	
-	// Sample from the multivariate normal using the Cholesky decomposition
-	gsl_matrix* samples = gsl_matrix_alloc(nsamples, p);
-	randomMVN(r, samples, covX);
+	// Calculate log likelihood l*
+	double l_star;
 
-	// Calculate sample covariance matrix
-	gsl_matrix* sampleCov = gsl_matrix_alloc(p, p);
-	makeCovariance(sampleCov, samples);
-	printmatrix("sampleCov.txt", sampleCov);
+	// Initialize beta matrix
+	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
+	gsl_matrix_set_zero(beta);
+
+	l_star = logisticLogLikStar(response, index, beta);
+
+
 
 	// Free memory
-	gsl_matrix_free(X);
-	gsl_matrix_free(covX);
-	gsl_matrix_free(samples);
-  	gsl_rng_free(r);
-  	gsl_matrix_free(sampleCov);
+	gsl_matrix_free(beta);
+	gsl_matrix_free(data);
 	
   	return(1);
 }
