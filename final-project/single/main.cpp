@@ -65,6 +65,8 @@ void randomMVN(gsl_rng* mystream, gsl_matrix* samples, gsl_matrix* sigma, gsl_ma
 
 		// Add mean vector
 		printf("\nAbout to add matrices\n");
+		printmatrix("X.txt", X);
+		printmatrix("means.txt", means);
 		gsl_matrix_add(X, means);
 
 		// Store in samples matrix
