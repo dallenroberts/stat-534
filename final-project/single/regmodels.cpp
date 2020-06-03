@@ -267,12 +267,12 @@ void SaveRegressions(char* filename,LPRegression regressions)
     }
 
     //print the log marginal likelhoods
-    fprintf(out,"%.3f\t%.3f",p->lml_mc, p->lml_la);
+    fprintf(out,"%.3f\t\t%.3f",p->lml_mc, p->lml_la);
 
     // beta coefficients
     for(i=0;i<(p->lenA+1);i++)
     {
-       fprintf(out,"%.3f\t",p->beta[i]);
+       fprintf(out,"%.3f\t\t",p->beta[i]);
     }
 
     fprintf(out,"\n");
