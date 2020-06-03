@@ -545,12 +545,9 @@ double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsample
 }
 
 // Adds a regression using predictor index to the LPRegression list regressions
-void bayesLogistic(int index, gsl_rng* mystream, LPRegression regressions) {
+void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPRegression regressions) {
 
 	int i;
-	int n = 148;
-  	int p = 61;
-  	int response = 60; // Index of the response column
   	double lml_la;
   	double lml_mc;
   	int nMaxRegs = 5; // Maximum number of regressions to keep track of
@@ -615,6 +612,10 @@ void bayesLogistic(int index, gsl_rng* mystream, LPRegression regressions) {
 // Loads 534finalprojectdata.txt
 int main() {
 
+	int n = 148;
+  	int p = 61;
+  	int response = 60; // Index of response column
+
   	char outputfilename[] = "bestregressions.txt";
 
 	// Initialize random number generator
@@ -632,7 +633,7 @@ int main() {
 
   	// Add regression
   	int index = 0;
-  	bayesLogistic(index, r, regressions);
+  	bayesLogistic(index, n, p, response, r, regressions);
 
     //save the list in a file
   	SaveRegressions(outputfilename,regressions);
