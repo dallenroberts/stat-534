@@ -169,7 +169,7 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 
 	// getPis
 	gsl_matrix* Pis = getPi(n, x, beta);
-	printmatrix("pis.txt", Pis);
+	// printmatrix("pis.txt", Pis);
 
 	// Calculate logistic log likelihood
 	for(i=0;i<n;i++) {
@@ -397,7 +397,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 	gsl_matrix* covMat = inverse(hessian);
 	gsl_matrix_scale(covMat, -1.0);
-	printmatrix("covMat.txt", covMat);
+	// printmatrix("covMat.txt", covMat);
 
 	// Initial state
 	gsl_matrix* currentBeta = gsl_matrix_alloc(2,1);
@@ -574,17 +574,17 @@ void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPR
 
 	// Calculate beta modes using Newton-Raphson algorithm
 	gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
-	printmatrix("betaMode.txt", betaMode);
+	// printmatrix("betaMode.txt", betaMode);
 
 	// Calculate posterior means for betas
-	gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 1000);
+	gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 10);
 
 	printf(" Sample means:\n");
 	for(i=0;i<(sampleMeans->size1);i++) {
 
 		printf("    beta%i = %.3f\n", i, gsl_matrix_get(sampleMeans, i, 0));
 	}
-	printmatrix("sampleMeans.txt", sampleMeans);
+	// printmatrix("sampleMeans.txt", sampleMeans);
 
 	// Calculate log marginal likelihood using LaPlace approximation
 	printf("\n Posterior log marginal likelihood P(D) estimates:\n");
@@ -592,7 +592,7 @@ void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPR
 	printf("    Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
-	lml_mc = log(getMC(mystream, n, y, x, 10000));
+	lml_mc = log(getMC(mystream, n, y, x, 10));
 	printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
 	// Add to linked list
@@ -617,6 +617,7 @@ int main() {
 	int n = 148;
   	int p = 61;
   	int response = 60; // Index of response column
+  	int i;
 
   	char outputfilename[] = "bestregressions.txt";
 
@@ -632,8 +633,11 @@ int main() {
   	regressions->Next = NULL;
 
   	// Add regression
-  	int index = 0;
-  	bayesLogistic(index, n, p, response, r, regressions);
+  	for(i=0;i<response;i++) {
+
+  		bayesLogistic(i, n, p, response, r, regressions);
+
+  	}
 
     //save the list in a file
   	SaveRegressions(outputfilename,regressions);
