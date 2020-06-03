@@ -12,11 +12,14 @@ matrices.o: matrices.cpp matrices.h
 regmodels.o: regmodels.cpp regmodels.h
 	gcc -g -c regmodels.cpp -o regmodels.o ${RND_INCLUDE}
 
-main.o: main.cpp matrices.h
+bayes.o: bayesFunctions.cpp matrices.h regmodels.h
+	gcc -g -c bayesFunctions.cpp -o bayesFunctions.o ${RND_INCLUDE}
+
+main.o: main.cpp matrices.h regmodels.h
 	gcc -g -c main.cpp -o main.o ${RND_INCLUDE}
 
-rnd: main.o matrices.o regmodels.o
-	gcc main.o regmodels.o matrices.o -o rnd ${RND_LIB} ${RND_LSTDFLG}
+rnd: main.o matrices.o regmodels.o bayes.o
+	gcc main.o bayes.o regmodels.o matrices.o -o rnd ${RND_LIB} ${RND_LSTDFLG}
 
 clean:
 	rm -f *.o
