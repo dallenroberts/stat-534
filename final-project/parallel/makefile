@@ -15,11 +15,11 @@ regmodels.o: regmodels.cpp regmodels.h
 bayes.o: bayesFunctions.cpp bayes.h matrices.h regmodels.h
 	gcc -g -c bayesFunctions.cpp -o bayes.o ${MPI_INCLUDE}	
 
-parallelBayesLogistic.o: parallelBayesLogistic.cpp
+parallelBayesLogistic.o: parallelBayesLogistic.cpp matrices.h regmodels.h
 	mpic++ -g -c parallelBayesLogistic.cpp -o parallelBayesLogistic.o ${MPI_INCLUDE}
 
-parallelBayesLogistic: parallelBayesLogistic.o
-	mpic++ parallelBayesLogistic.o -o parallelBayesLogistic ${MPI_LIB} ${MPI_LSTDFLG}
+parallelBayesLogistic: parallelBayesLogistic.o matrices.o regmodels.o bayes.o
+	mpic++ parallelBayesLogistic.o bayes.o regmodels.o matrices.o -o parallelBayesLogistic ${MPI_LIB} ${MPI_LSTDFLG}
 
 clean:
 	rm -f *.o
