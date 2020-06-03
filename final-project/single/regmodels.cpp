@@ -251,23 +251,28 @@ void SaveRegressions(char* filename,LPRegression regressions)
     exit(1);
   }
 
+  // Header
+  fprintf(out, "i\tlml_mc\tlml_la\tb0\tb1\n");
+
+
   //this is the first regression
   LPRegression p = regressions->Next;
   while(NULL!=p)
   {
-    //print the log marginal likelhood
-    fprintf(out,"%.3f\t%.3f",p->lml_mc, p->lml_la);
 
     //now save the predictors
     for(i=0;i<p->lenA;i++)
     {
-       fprintf(out,"\t%d",p->A[i]);
+       fprintf(out,"%d\t",p->A[i]);
     }
+
+    //print the log marginal likelhoods
+    fprintf(out,"%.3f\t%.3f",p->lml_mc, p->lml_la);
 
     // beta coefficients
     for(i=0;i<(p->lenA+1);i++)
     {
-       fprintf(out,"\t%.3f",p->beta[i]);
+       fprintf(out,"%.3f\t",p->beta[i]);
     }
 
     fprintf(out,"\n");
