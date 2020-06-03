@@ -544,36 +544,18 @@ double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsample
 	return(lml);
 }
 
-// bayesLogistic()
-
-// Loads 534finalprojectdata.txt
-int main() {
+// Adds a regression using predictor index to the LPRegression list regressions
+void bayesLogistic(int index, gsl_rng* mystream, LPRegression regressions) {
 
 	int i;
-  	int n = 148;
+	int n = 148;
   	int p = 61;
   	int response = 60; // Index of the response column
   	double lml_la;
   	double lml_mc;
-  	char outputfilename[] = "bestregressions.txt";
   	int nMaxRegs = 5; // Maximum number of regressions to keep track of
-	
-	int index = 0;
 
-	// Initialize random number generator
-  	const gsl_rng_type* T;
-  	gsl_rng* r;
-  	gsl_rng_env_setup();
-  	T = gsl_rng_default;
-  	r = gsl_rng_alloc(T);
-
-  	//create the head of the list of regressions
-  	LPRegression regressions = new Regression;
-  	regressions->Next = NULL;
-  	int A[p-1]; //indices of the variables present in the regression
-  	int lenA = -1; //number of indices
-
-  	// Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
+	// Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
   	// The first 60 columns are associated with 60 explanatory variables X, 
   	// while column 61 (the last column) corresponds with the response binary variable Y
   	gsl_matrix* data = gsl_matrix_alloc(n, p);
@@ -620,6 +602,37 @@ int main() {
     AddRegression(nMaxRegs, regressions,
       lenA, A, sampleMeans, lml_la,
       lml_mc);
+    
+    // Free memory
+	gsl_matrix_free(x);
+	gsl_matrix_free(y);
+	gsl_matrix_free(betaMode);
+	gsl_matrix_free(sampleMeans);
+	gsl_matrix_free(data);
+
+}
+
+// Loads 534finalprojectdata.txt
+int main() {
+
+  	char outputfilename[] = "bestregressions.txt";
+
+	// Initialize random number generator
+  	const gsl_rng_type* T;
+  	gsl_rng* r;
+  	gsl_rng_env_setup();
+  	T = gsl_rng_default;
+  	r = gsl_rng_alloc(T);
+
+  	//create the head of the list of regressions
+  	LPRegression regressions = new Regression;
+  	regressions->Next = NULL;
+  	int A[p-1]; //indices of the variables present in the regression
+  	int lenA = -1; //number of indices
+
+  	// Add regression
+  	int index = 0;
+  	bayesLogistic(index, r, regressions);
 
     //save the list in a file
   	SaveRegressions(outputfilename,regressions);
@@ -628,11 +641,6 @@ int main() {
   	DeleteAllRegressions(regressions);
 	
 	// Free memory
-	gsl_matrix_free(x);
-	gsl_matrix_free(y);
-	gsl_matrix_free(betaMode);
-	gsl_matrix_free(sampleMeans);
-	gsl_matrix_free(data);
 	gsl_rng_free(r);
 	delete regressions; regressions = NULL;
 	
