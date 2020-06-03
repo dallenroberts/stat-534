@@ -551,6 +551,8 @@ void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPR
   	double lml_la;
   	double lml_mc;
   	int nMaxRegs = 5; // Maximum number of regressions to keep track of
+  	int A[p-1]; //indices of the variables present in the regression
+  	int lenA = -1; //number of indices
 
 	// Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
   	// The first 60 columns are associated with 60 explanatory variables X, 
@@ -628,8 +630,6 @@ int main() {
   	//create the head of the list of regressions
   	LPRegression regressions = new Regression;
   	regressions->Next = NULL;
-  	int A[p-1]; //indices of the variables present in the regression
-  	int lenA = -1; //number of indices
 
   	// Add regression
   	int index = 0;
