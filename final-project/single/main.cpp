@@ -544,6 +544,8 @@ double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsample
 	return(lml);
 }
 
+// bayesLogistic()
+
 // Loads 534finalprojectdata.txt
 int main() {
 
