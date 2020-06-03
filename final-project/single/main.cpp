@@ -597,13 +597,13 @@ int main() {
 	printmatrix("sampleMeans.txt", sampleMeans);
 
 	// Calculate log marginal likelihood using LaPlace approximation
+	printf("\n Posterior log marginal likelihood P(D) estimates:\n")
 	lml_la = getLaplaceApprox(n, y, x, betaMode);
-	printf("\n Posterior log marginal likelihood P(D) calculated by Laplace approximation = %.3f \n", lml_la);
+	printf("    Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
-	lml_mc = getMC(r, n, y, x, 1000);
-	printf("\n Posterior log marginal likelihood P(D) calculated by Monte Carlo integration = %.3f \n", log(lml_mc));
-
+	lml_mc = getMC(r, n, y, x, 10000);
+	printf("    Monte Carlo integration = %.3f \n", log(lml_mc));
 	
 	// Free memory
 	gsl_matrix_free(x);
