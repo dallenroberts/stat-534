@@ -57,7 +57,7 @@ void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPR
 	printf("    Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
-	lml_mc = log(getMC(mystream, n, y, x, 1000));
+	lml_mc = log(getMC(mystream, n, y, x, 10000));
 	printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
 	// Add to linked list
