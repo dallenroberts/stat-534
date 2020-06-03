@@ -616,7 +616,7 @@ int main() {
 	lenA = 1;
     A[0] = index+1;
     AddRegression(nMaxRegs, regressions,
-      lenA, A, beta, lml_la,
+      lenA, A, sampleMeans, lml_la,
       lml_mc);
 
     //save the list in a file
