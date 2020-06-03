@@ -609,8 +609,8 @@ int main() {
 	printf("    Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
-	lml_mc = getMC(r, n, y, x, 10000);
-	printf("    Monte Carlo integration = %.3f \n", log(lml_mc));
+	lml_mc = log(getMC(r, n, y, x, 10000));
+	printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
 	// Add to linked list
 	lenA = 1;
