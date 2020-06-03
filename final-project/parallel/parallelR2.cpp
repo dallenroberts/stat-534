@@ -16,9 +16,9 @@
 
 // For MPI communication
 #define GETR2	1
-#define DIETAG	0
+#define SHUTDOWNTAG	0
 
-// Used to determine MASTER or SLAVE
+// Used to determine PRIMARY or REPLICA
 static int myrank;
 
 // Global variables
@@ -31,8 +31,8 @@ double ssy = 0.0;	// used in R2 calculation
 
 // Function Declarations
 void NormStand();
-void master();
-void slave(int slavename);
+void primary();
+void replica(int primaryname);
 double GetR2(int v);
 
 
@@ -87,16 +87,16 @@ int main(int argc, char* argv[])
    // Used to calculate R2
    for(i=0; i<nobservations; i++) ssy += Y[i]*Y[i];
 
-   // Branch off to master or slave function
-   // Master has ID == 0, the slaves are then in order 1,2,3,...
+   // Branch off to primary or replica function
+   // Primary has ID == 0, the replicas are then in order 1,2,3,...
    
    if(myrank==0)
    {
-      master();
+      primary();
    }
    else
    {
-      slave(myrank);
+      replica(myrank);
    }
 
    // clean memory
@@ -113,22 +113,21 @@ int main(int argc, char* argv[])
    return(1);
 }
 
-void master()
+void primary()
 {
    int var;		// to loop over the variables
    int rank;		// another looping variable
-   int ntasks;		// the total number of slaves
-   int jobsRunning;	// how many slaves we have working
-   int work[1];		// information to send to the slaves
-   double workresults[2]; // info received from the slaves
+   int ntasks;		// the total number of replicas
+   int jobsRunning;	// how many replicas we have working
+   int work[1];		// information to send to the replicas
+   double workresults[2]; // info received from the replicas
    FILE* fout;		// the output file
    MPI_Status status;	// MPI information
 
    fout = fopen("R2_values.txt","w");
 
-   // Find out how many slaves there are
-   MPI_Comm_size(MPI_COMM_WORLD,
-		     &ntasks);
+   // Find out how many replicas there are
+   MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
 
    fprintf(stdout, "Total Number of processors = %d\n",ntasks);
 
@@ -138,20 +137,20 @@ void master()
 
    for(var=0; var<nvariables; var++)
    {
-      // This will tell the slave which variable to work on
+      // This will tell a replica which variable to work on
       work[0] = var;
 
       if(jobsRunning < ntasks) // Do we have an available processor?
       {
          // Send out a work request
          MPI_Send(&work, 	// the vector with the variable
-		  1, 		// the size of the vector
-		  MPI_INT,	// the type of the vector
-                  jobsRunning,	// the ID of the slave to use
-                  GETR2,	// tells the slave what to do
+		            1, 		// the size of the vector
+		            MPI_INT,	// the type of the vector
+                  jobsRunning,	// the ID of the replica to use
+                  GETR2,	// tells the replica what to do
                   MPI_COMM_WORLD); // send the request out to anyone
 				   // who is available
-         printf("Master sends out work request [%d] to slave [%d]\n",
+         printf("Primary sends out work request [%d] to replica [%d]\n",
                 work[0],jobsRunning);
 
          // Increase the # of processors in use
@@ -161,21 +160,21 @@ void master()
       else // all the processors are in use!
       {
          MPI_Recv(workresults,	// where to store the results
- 		  2,		// the size of the vector
-		  MPI_DOUBLE,	// the type of the vector
-	 	  MPI_ANY_SOURCE,
-		  MPI_ANY_TAG, 	
-		  MPI_COMM_WORLD,
-		  &status);     // lets us know which processor
+ 		            2,		// the size of the vector
+		            MPI_DOUBLE,	// the type of the vector
+	 	            MPI_ANY_SOURCE,
+		            MPI_ANY_TAG, 	
+		            MPI_COMM_WORLD,
+		            &status);     // lets us know which processor
 				// returned these results
 
-         printf("Master has received the result of work request [%d] from slave [%d]\n",
+         printf("Primary has received the result of work request [%d] from replica [%d]\n",
                 (int) workresults[0],status.MPI_SOURCE);
  
          // Print out the results
          fprintf(fout, "%d\t%f\n", (int)workresults[0]+1, workresults[1]);
 
-         printf("Master sends out work request [%d] to slave [%d]\n",
+         printf("Primary sends out work request [%d] to replica [%d]\n",
                 work[0],status.MPI_SOURCE);
 
          // Send out a new work order to the processors that just
@@ -183,7 +182,7 @@ void master()
          MPI_Send(&work,
                   1,
                   MPI_INT,
-                  status.MPI_SOURCE, // the slave that just returned
+                  status.MPI_SOURCE, // the replica that just returned
                   GETR2,
                   MPI_COMM_WORLD); 
       } // using all the processors
@@ -192,10 +191,10 @@ void master()
 
    ///////////////////////////////////////////////////////////////
    // NOTE: we still have some work requests out that need to be
-   // collected. Collect those results now!
+   // collected. Collect those results now.
    ///////////////////////////////////////////////////////////////
 
-   // loop over all the slaves
+   // loop over all the replicas
    for(rank=1; rank<jobsRunning; rank++)
    {
       MPI_Recv(workresults,
@@ -206,28 +205,28 @@ void master()
                MPI_COMM_WORLD,
                &status);
 
-       printf("Master has received the result of work request [%d]\n",
+       printf("Primary has received the result of work request [%d]\n",
                 (int) workresults[0]);
  
       //save the results received
       fprintf(fout, "%d\t%f\n", (int)workresults[0]+1, workresults[1]);
    }
 
-   printf("Tell the slave to die\n");
+   printf("Tell the replicas to shutdown.\n");
 
-   // Shut down the slave processes
+   // Shut down the replica processes
    for(rank=1; rank<ntasks; rank++)
    {
-      printf("Master is killing slave [%d]\n",rank);
+      printf("Primary is shutting down replica [%d]\n",rank);
       MPI_Send(0,
-	       0,
+	            0,
                MPI_INT,
                rank,		// shutdown this particular node
-               DIETAG,		// tell it to shutdown
+               SHUTDOWNTAG,		// tell it to shutdown
 	       MPI_COMM_WORLD);
    }
 
-   printf("got to the end of Master code\n");
+   printf("got to the end of Primary code\n");
 
    fclose(fout);
 
@@ -236,25 +235,25 @@ void master()
   
 }
 
-void slave(int slavename)
+void replica(int replicaname)
 {
-   int work[1];			// the inputs from the master
-   double workresults[2];	// the outputs for the master
+   int work[1];			// the input from primary
+   double workresults[2];	// the output for primary
    MPI_Status status;		// for MPI communication
 
-   // the slave listens for instructions...
+   // the replica listens for instructions...
    int notDone = 1;
    while(notDone)
    {
-      printf("Slave %d is waiting\n",slavename);
-      MPI_Recv(&work,		// the inputs from the master
-	       1,		// the size of the inputs
-	       MPI_INT,		// the type of the inputs
-               0,		// from the MASTER node (rank=0)
+      printf("Replica %d is waiting\n",replicaname);
+      MPI_Recv(&work, // the input from primary
+	            1,		// the size of the input
+	            MPI_INT,		// the type of the input
+               0,		// from the PRIMARY node (rank=0)
                MPI_ANY_TAG,	// any type of order is fine
                MPI_COMM_WORLD,
                &status);
-      printf("Slave %d just received smth\n",slavename);
+      printf("Replica %d just received smth\n",replicaname);
 
       // switch on the type of work request
       switch(status.MPI_TAG)
@@ -263,35 +262,34 @@ void slave(int slavename)
             // Get the R2 value for this variable
             // ...and save it in the results vector
 
-           printf("Slave %d has received work request [%d]\n",
-                  slavename,work[0]);
+           printf("Replica %d has received work request [%d]\n",
+                  replicaname,work[0]);
           
-	    workresults[1] = GetR2(work[0]);
+	        workresults[1] = GetR2(work[0]);
 
-            // tell the master what variable you're returning
-
+            // tell the primary what variable you're returning
             workresults[0] = (double)work[0];
 
             // Send the results
             MPI_Send(&workresults,
                      2,
                      MPI_DOUBLE,
-                     0,		// send it to the master
+                     0,		// send it to primary
                      0,		// doesn't need a TAG
                      MPI_COMM_WORLD);
 
-            printf("Slave %d finished processing work request [%d]\n",
-                   slavename,work[0]);
+            printf("Replica %d finished processing work request [%d]\n",
+                   replicaname,work[0]);
 
             break;
 
-         case DIETAG:
-            printf("Slave %d was told to die\n",slavename);
+         case SHUTDOWNTAG:
+            printf("Replica %d was told to shutdown\n",replicaname);
             return;
 
          default:
             notDone = 0;
-            printf("The slave code should never get here.\n");
+            printf("The replica code should never get here.\n");
             return;
       }
    }
