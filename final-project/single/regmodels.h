@@ -19,9 +19,11 @@ typedef struct myRegression Regression;
 struct myRegression
 {
   int lenA; //number of regressors
-  double logmarglikA; //log marginal likelihood of the regression
-  int* A; //regressors
-
+  int* A; //regressor index
+  double* beta; // regression coefficients
+  double lml_mc; // log marginal likelihood of the regression as determined by Monte Carlo integration
+  double lml_la; //log marginal likelihood of the regression as determined by Laplace Approximation
+  
   LPRegression Next; //link to the next regression
 };
 

@@ -42,9 +42,9 @@ int sameregression(int lenA1,int* A1,int lenA2,int* A2)
 //this function adds a new regression with predictors A
 //to the list of regressions. Here "regressions" represents
 //the head of the list, "lenA" is the number of predictors
-//and "logmarglikA" is the marginal likelihood of the regression
-//with predictors A
-void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double logmarglikA)
+//and "lml_mc" is the Monte Carlo marginal likelihood of the regression
+//with predictors A 
+void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double lml_mc)
 {
   int i;
   LPRegression p = regressions;
@@ -65,7 +65,7 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
      //go to the next element in the list if the current
      //regression has a larger log marginal likelihood than
      //the new regression A
-     if(pnext->logmarglikA>logmarglikA)
+     if(pnext->lml_mc>lml_mc)
      {
         p = pnext;
         pnext = p->Next;
@@ -79,7 +79,7 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   //create a new element of the list
   LPRegression newp = new Regression;
   newp->lenA = lenA;
-  newp->logmarglikA = logmarglikA;
+  newp->lml_mc = lml_mc;
   newp->A = new int[lenA];
   
   //copy the predictors
@@ -243,7 +243,7 @@ void SaveRegressions(char* filename,LPRegression regressions)
   while(NULL!=p)
   {
     //print the log marginal likelhood and the number of predictors
-    fprintf(out,"%.5lf\t%d",p->logmarglikA,p->lenA);
+    fprintf(out,"%.5lf\t%d",p->lml_mc,p->lenA);
     //now save the predictors
     for(i=0;i<p->lenA;i++)
     {

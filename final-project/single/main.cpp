@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <gsl/gsl_rng.h>
 #include "matrices.h"
+#include "regmodels.h"
 
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
 // Note that the final matrix returned is lower triangular
@@ -552,6 +553,8 @@ int main() {
   	int response = 60; // Index of the response column
   	double lml_la;
   	double lml_mc;
+  	char outputfilename[] = "bestregressions.txt";
+  	int nMaxRegs = 5; // Maximum number of regressions to keep track of
 	
 	int index = 0;
 
@@ -561,6 +564,12 @@ int main() {
   	gsl_rng_env_setup();
   	T = gsl_rng_default;
   	r = gsl_rng_alloc(T);
+
+  	//create the head of the list of regressions
+  	LPRegression regressions = new Regression;
+  	regressions->Next = NULL;
+  	int A[p-1]; //indices of the variables present in the regression
+  	int lenA = -1; //number of indices
 
   	// Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
   	// The first 60 columns are associated with 60 explanatory variables X, 
@@ -602,6 +611,19 @@ int main() {
 	// Calculate log marginal likelihood using Monte Carlo integration
 	lml_mc = getMC(r, n, y, x, 10000);
 	printf("    Monte Carlo integration = %.3f \n", log(lml_mc));
+
+	// Add to linked list
+	lenA = 1;
+    A[0] = index+1;
+    AddRegression(nMaxRegs, regressions,
+      lenA, A, 
+      lml_mc);
+
+    //save the list in a file
+  	SaveRegressions(outputfilename,regressions);
+
+  	//delete all regressions
+  	DeleteAllRegressions(regressions);
 	
 	// Free memory
 	gsl_matrix_free(x);
@@ -610,6 +632,7 @@ int main() {
 	gsl_matrix_free(sampleMeans);
 	gsl_matrix_free(data);
 	gsl_rng_free(r);
+	delete regressions; regressions = NULL;
 	
   	return(1);
 }
