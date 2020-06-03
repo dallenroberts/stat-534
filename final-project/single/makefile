@@ -13,10 +13,10 @@ regmodels.o: regmodels.cpp regmodels.h
 	gcc -g -c regmodels.cpp -o regmodels.o ${RND_INCLUDE}
 
 main.o: main.cpp matrices.h
-	gcc -g -c main.cpp -o main.o
+	gcc -g -c main.cpp -o main.o ${RND_INCLUDE}
 
 rnd: main.o matrices.o regmodels.o
-	gcc main.o matrices.o regmodels.o -o rnd ${RND_LIB} ${RND_LSTDFLG}
+	gcc main.o regmodels.o matrices.o -o rnd ${RND_LIB} ${RND_LSTDFLG}
 
 clean:
 	rm -f *.o
