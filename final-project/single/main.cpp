@@ -597,7 +597,7 @@ int main() {
 	printmatrix("sampleMeans.txt", sampleMeans);
 
 	// Calculate log marginal likelihood using LaPlace approximation
-	printf("\n Posterior log marginal likelihood P(D) estimates:\n")
+	printf("\n Posterior log marginal likelihood P(D) estimates:\n");
 	lml_la = getLaplaceApprox(n, y, x, betaMode);
 	printf("    Laplace approximation = %.3f \n", lml_la);
 
