@@ -589,10 +589,10 @@ int main() {
 	// Calculate posterior means for betas
 	gsl_matrix* sampleMeans = getPosteriorMeans(r, n, y, x, betaMode, 1000);
 
-	printf("Sample means:\n");
+	printf(" Sample means:\n");
 	for(i=0;i<(sampleMeans->size1);i++) {
 
-		printf("   beta%i = %.3f\n", i, gsl_matrix_get(sampleMeans, i, 0));
+		printf("    beta%i = %.3f\n", i, gsl_matrix_get(sampleMeans, i, 0));
 	}
 	printmatrix("sampleMeans.txt", sampleMeans);
 
@@ -601,8 +601,8 @@ int main() {
 	printf("\n Posterior log marginal likelihood P(D) calculated by Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
-	lml_mc = getMC(r, n, y, x, 10000);
-	printf("\n Posterior log marginal likelihood P(D) calculated by Monte Carlo integration = %.3f \n", lml_mc);
+	lml_mc = getMC(r, n, y, x, 1000);
+	printf("\n Posterior log marginal likelihood P(D) calculated by Monte Carlo integration = %.3f \n", log(lml_mc));
 
 	
 	// Free memory
