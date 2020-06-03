@@ -106,7 +106,7 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A, gsl_m
   for(i=0;i<lenA;i++){
 
       if(i==0) {
-        printf("inserted [%d]",A[i]);
+        printf("\n inserted regression [%d]",A[i]);
       } else{
         printf(", [%d]",A[i]);
       }
