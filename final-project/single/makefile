@@ -12,7 +12,7 @@ matrices.o: matrices.cpp matrices.h
 regmodels.o: regmodels.cpp regmodels.h
 	gcc -g -c regmodels.cpp -o regmodels.o ${RND_INCLUDE}
 
-bayes.o: bayesFunctions.cpp matrices.h regmodels.h
+bayes.o: bayesFunctions.cpp bayes.h matrices.h regmodels.h
 	gcc -g -c bayesFunctions.cpp -o bayesFunctions.o ${RND_INCLUDE}
 
 main.o: main.cpp matrices.h regmodels.h
