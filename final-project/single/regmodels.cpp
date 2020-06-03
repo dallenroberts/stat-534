@@ -13,6 +13,7 @@
 #include <float.h>
 
 #include "regmodels.h"
+#include "matrices.h"
 
 
 //tests if two vectors are equal
@@ -44,7 +45,7 @@ int sameregression(int lenA1,int* A1,int lenA2,int* A2)
 //the head of the list, "lenA" is the number of predictors
 //and "lml_mc" is the Monte Carlo marginal likelihood of the regression
 //with predictors A 
-void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double lml_mc)
+void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A, gsl_matrix* beta, double lml_mc, double lml_la)
 {
   int i;
   LPRegression p = regressions;
@@ -80,12 +81,22 @@ void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A,double
   LPRegression newp = new Regression;
   newp->lenA = lenA;
   newp->lml_mc = lml_mc;
+  newp->lml_la = lml_la;
   newp->A = new int[lenA];
-  
+  newp->beta = new double[lenA+1];
+
   //copy the predictors
   for(i=0;i<lenA;i++)
   {
     newp->A[i] = A[i];
+  }
+
+
+  // Copy the beta coefficients
+  for(i=0;i<(lenA+1);i++) {
+
+    newp->beta[i] = gsl_matrix_get(beta, i, 0);
+
   }
 
   //insert the new element in the list
@@ -177,6 +188,7 @@ void DeleteAllRegressions(LPRegression regressions)
     //delete the element specified by p
     //first free the memory of the vector of regressors
     delete[] p->A;
+    delete[] p->beta;
     p->Next = NULL;
     delete p;
 
@@ -214,6 +226,7 @@ void DeleteLastRegression(LPRegression regressions)
   //now "p" should give the last element
   //delete it
   delete[] p->A;
+  delete[] p->beta;
   p->Next = NULL;
   delete p;
 
@@ -242,13 +255,21 @@ void SaveRegressions(char* filename,LPRegression regressions)
   LPRegression p = regressions->Next;
   while(NULL!=p)
   {
-    //print the log marginal likelhood and the number of predictors
-    fprintf(out,"%.5lf\t%d",p->lml_mc,p->lenA);
+    //print the log marginal likelhood
+    fprintf(out,"%.3f\t%.3f",p->lml_mc, p->lml_la);
+
     //now save the predictors
     for(i=0;i<p->lenA;i++)
     {
        fprintf(out,"\t%d",p->A[i]);
     }
+
+    // beta coefficients
+    for(i=0;i<p->(lenA+1);i++)
+    {
+       fprintf(out,"\t%.3f",p->beta[i]);
+    }
+
     fprintf(out,"\n");
 
     //go to the next regression
