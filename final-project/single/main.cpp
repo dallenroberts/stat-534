@@ -7,8 +7,6 @@
 #include <gsl/gsl_rng.h>
 #include "matrices.h"
 
-
-
 // Inputs gsl_matrix* K and outputs Cholesky decomposition as gsl_matrix *
 // Note that the final matrix returned is lower triangular
 gsl_matrix* makeCholesky(gsl_matrix* K) {
