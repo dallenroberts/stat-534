@@ -265,7 +265,7 @@ void SaveRegressions(char* filename,LPRegression regressions)
     }
 
     // beta coefficients
-    for(i=0;i<(p->(lenA)+1);i++)
+    for(i=0;i<(p->lenA+1);i++)
     {
        fprintf(out,"\t%.3f",p->beta[i]);
     }
