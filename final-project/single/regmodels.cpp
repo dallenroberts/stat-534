@@ -252,7 +252,7 @@ void SaveRegressions(char* filename,LPRegression regressions)
   }
 
   // Header
-  fprintf(out, "i\tlml_mc\tlml_la\tb0\tb1\n");
+  fprintf(out, "index\tlml_mc\t\tlml_la\t\tb0\t\tb1\n");
 
 
   //this is the first regression
@@ -263,7 +263,7 @@ void SaveRegressions(char* filename,LPRegression regressions)
     //now save the predictors
     for(i=0;i<p->lenA;i++)
     {
-       fprintf(out,"%d\t",p->A[i]);
+       fprintf(out,"%i\t",p->A[i]);
     }
 
     //print the log marginal likelhoods
