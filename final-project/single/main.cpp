@@ -7,6 +7,7 @@
 #include <gsl/gsl_rng.h>
 #include "matrices.h"
 #include "regmodels.h"
+#include "bayes.h"
 
 // Adds a regression using predictor index to the LPRegression list regressions
 void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPRegression regressions) {
