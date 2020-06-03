@@ -463,7 +463,7 @@ gsl_matrix* getPosteriorMeans(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matr
 	// printmatrix("MHsamples.txt", samples);
 
 	// Calculate sample means
-	printf("Metropolis-Hastings finished\n");
+	printf("Metropolis-Hastings finished.\n");
 	gsl_matrix* sampleMeans = gsl_matrix_alloc(2, 1);
 
 	for(i=0; i<(samples->size2); i++) {
@@ -503,6 +503,46 @@ double getLaplaceApprox(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMod
 
 	return(lml);
 
+}
+
+// This function evaluates the log marginal likelihood P(D) using 
+// Monte Carlo integration. It draws nsamples from the two independent
+// normal priors for the regression coefficients beta0 and beta
+// and then calculates the average likelihood exp(l*(beta0, beta1))
+double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsamples) {
+
+	int j;
+	double sum = 0;
+	double lml;
+
+	// Means and covariance matrix for prior distributions
+	gsl_matrix* priorMeans = gsl_matrix_alloc(2, 1);
+	gsl_matrix_set_zero(priorMeans);
+
+	gsl_matrix* priorCovMat = gsl_matrix_alloc(2, 2);
+	gsl_matrix_set_identity(priorCovMat);
+
+	// Placeholder for sampled betas
+	gsl_matrix* beta_j = gsl_matrix_alloc(2, 1);
+
+	for(j=0;j<nsamples;j++) {
+
+		// Sample from prior distribution
+		randomMVN(mystream, beta_j, priorCovMat, priorMeans);
+
+		// Calculate likelihood
+		sum += exp(logisticLogLikStar(n,y,x,beta_j));
+
+	}
+
+	lml = sum/(double)nsamples;
+
+	// Free memory
+	gsl_matrix_free(priorMeans);
+	gsl_matrix_free(priorCovMat);
+	gsl_matrix_free(beta_j);
+
+	return(lml);
 }
 
 // Loads 534finalprojectdata.txt
@@ -549,7 +589,7 @@ int main() {
 	// Calculate posterior means for betas
 	gsl_matrix* sampleMeans = getPosteriorMeans(r, n, y, x, betaMode, 1000);
 
-	printf("\n Sample means:\n");
+	printf("Sample means:\n");
 	for(i=0;i<(sampleMeans->size1);i++) {
 
 		printf("   beta%i = %.3f\n", i, gsl_matrix_get(sampleMeans, i, 0));
@@ -561,6 +601,8 @@ int main() {
 	printf("\n Posterior log marginal likelihood P(D) calculated by Laplace approximation = %.3f \n", lml_la);
 
 	// Calculate log marginal likelihood using Monte Carlo integration
+	lml_mc = getMC(r, n, y, x, 10000);
+	printf("\n Posterior log marginal likelihood P(D) calculated by Monte Carlo integration = %.3f \n", lml_mc);
 
 	
 	// Free memory
