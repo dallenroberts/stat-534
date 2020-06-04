@@ -64,8 +64,7 @@ void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPR
 	lenA = 1;
     A[0] = index+1;
     AddRegression(nMaxRegs, regressions,
-      lenA, A, sampleMeans, lml_la,
-      lml_mc);
+      lenA, A, sampleMeans, lml_mc, lml_la);
     
     // Free memory
 	gsl_matrix_free(x);

@@ -167,8 +167,7 @@ void primary() {
          gsl_matrix_set(betas, 1, 0, workresults[4]);
 
          AddRegression(nMaxRegs, regressions,
-            lenA, A, betas, lml_la,
-            lml_mc);
+            lenA, A, betas, lml_mc, lml_la);
 
          printf("Primary sends out work request [%d] to replica [%d]\n",
                 work[0],status.MPI_SOURCE);
@@ -213,8 +212,7 @@ void primary() {
       gsl_matrix_set(betas, 1, 0, workresults[4]);
 
       AddRegression(nMaxRegs, regressions,
-         lenA, A, betas, lml_la,
-         lml_mc);
+         lenA, A, betas, lml_mc, lml_la);
    }
 
    printf("Tell the replicas to shutdown.\n");
