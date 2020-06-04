@@ -166,7 +166,7 @@ void primary() {
          lml_mc = workresults[1];
          lml_la = workresults[2];
          gsl_matrix_set(betas, 0, 0, workresults[3]);
-         gsl_matrix_set(betas, 0, 1, workresults[4]);
+         gsl_matrix_set(betas, 1, 0, workresults[4]);
 
          AddRegression(nMaxRegs, regressions,
             lenA, A, betas, lml_la,
@@ -212,7 +212,7 @@ void primary() {
       lml_mc = workresults[1];
       lml_la = workresults[2];
       gsl_matrix_set(betas, 0, 0, workresults[3]);
-      gsl_matrix_set(betas, 0, 1, workresults[4]);
+      gsl_matrix_set(betas, 1, 0, workresults[4]);
 
       AddRegression(nMaxRegs, regressions,
          lenA, A, betas, lml_la,
