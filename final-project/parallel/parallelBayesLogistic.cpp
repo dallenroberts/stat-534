@@ -212,13 +212,13 @@ void primary()
       //save the results received
       lenA = 1;
       A[0] = (int)workresults[0]+1;
-      lml_mc = work_results[1];
-      lml_la = work_results[2];
+      lml_mc = workresults[1];
+      lml_la = workresults[2];
       gsl_matrix_set(betas, 0, 0, workresults[3]);
       gsl_matrix_set(betas, 0, 1, workresults[4]);
 
       AddRegression(nMaxRegs, regressions,
-         lenA, A, sampleMeans, lml_la,
+         lenA, A, betas, lml_la,
          lml_mc);
    }
 
@@ -253,8 +253,7 @@ void primary()
   
 }
 
-void replica(int replicaname)
-{
+void replica(int replicaname) {
    int work[1];			// the input from primary
    double workresults[5];	// the output for primary
    MPI_Status status;		// for MPI communication
