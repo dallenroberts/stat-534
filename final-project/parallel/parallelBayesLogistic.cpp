@@ -95,8 +95,7 @@ int main(int argc, char* argv[])
    return(1);
 }
 
-void primary()
-{
+void primary() {
    int i;		// to loop over the variables
    int rank;		// another looping variable
    int ntasks;		// the total number of replicas
