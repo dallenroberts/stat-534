@@ -93,7 +93,7 @@ double inverseLogit2(double x) {
 }
 
 
-// Computes pi_i = P(y_i = 1 | x_i)
+// Computes pi_i = P(y_i = 1 | x_i), returns as nx1 gsl_matrix* out
 gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 	gsl_matrix* x0 = gsl_matrix_alloc(n, 2);
@@ -123,7 +123,7 @@ gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta) {
 }
 
 
-// another function for the computation of the Hessian
+// another function for the computation of the Hessian,  returns as nx1 gsl_matrix* out
 gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 	gsl_matrix* x0 = gsl_matrix_alloc(n, 2);
@@ -150,6 +150,32 @@ gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 	return(out);
 
+}
+
+// Logistic log-likelihood
+double logisticLogLik(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+
+	double logLik = 0;
+	int i,j;
+	double yi;
+	double pi;
+
+	// getPis
+	gsl_matrix* Pis = getPi(n, x, beta);
+	// printmatrix("pis.txt", Pis);
+
+	// Calculate logistic log likelihood
+	for(i=0;i<n;i++) {
+
+		yi = gsl_matrix_get(y, i, 0);
+		pi = gsl_matrix_get(Pis, i, 0);
+
+		logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
+	}
+
+	gsl_matrix_free(Pis);
+
+	return(logLik);
 }
 
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
@@ -194,7 +220,7 @@ double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta)
 	return(lstar);
 }
 
-// Obtain the Hessian for Newton-Raphson
+// Obtain the Hessian for Newton-Raphson. Modifies existing gsl_matrix* hessian
 void getHessian(int n, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* hessian) {
 
 	int i;
@@ -233,7 +259,7 @@ void getHessian(int n, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* hessian) {
 
 }
 
-// Obtain the gradient for Newton-Raphson
+// Obtain the gradient for Newton-Raphson. Modifies existing gsl_matrix* gradient
 void getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* gradient) {
 
 	int i;
@@ -267,7 +293,8 @@ void getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta, gsl_matr
 
 }
 
-// this function implements our own Newton-Raphson procedure
+// this function implements our own Newton-Raphson procedure. Outputs beta 
+// coefficient estimates as 2x1 gsl_matrix*.
 gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	double currentLoglik;
@@ -443,7 +470,7 @@ gsl_matrix* sampleMH(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gs
 
 // Calculates the posterior means of niter samples from the joint distribution
 // of the betas given the observed data. Sampling is done via Metropolis-
-// Hastings. Returns a 2x1 matrix of beta values.
+// Hastings. Returns a 2x1 matrix of mean beta values.
 gsl_matrix* getPosteriorMeans(gsl_rng* mystream, int n,  gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMode, int niter) {
 
 	int i;
@@ -499,7 +526,7 @@ double getLaplaceApprox(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMod
 // This function evaluates the log marginal likelihood P(D) using 
 // Monte Carlo integration. It draws nsamples from the two independent
 // normal priors for the regression coefficients beta0 and beta
-// and then calculates the average likelihood exp(l*(beta0, beta1))
+// and then calculates the average likelihood exp(l(beta0, beta1))
 double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsamples) {
 
 	int j;
@@ -522,7 +549,7 @@ double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsample
 		randomMVN(mystream, beta_j, priorCovMat, priorMeans);
 
 		// Calculate likelihood
-		sum += exp(logisticLogLikStar(n,y,x,beta_j));
+		sum += exp(logisticLogLik(n,y,x,beta_j));
 
 	}
 

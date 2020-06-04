@@ -32,8 +32,8 @@ Final Project
 static int myrank;
 
 // Global variables
-int n = 148;
-int p = 61; 
+int n = 148; // Number of observations in dataset
+int p = 61; // Number of columns in dataset
 int response = 60; // Index of response column
 gsl_matrix* data = gsl_matrix_alloc(n, p); // Data matrix
 gsl_matrix* y = gsl_matrix_alloc(n, 1); // Response nx1 matrix
@@ -337,11 +337,11 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    }
 
    // Calculate beta modes using Newton-Raphson algorithm
-   gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
+   gsl_matrix* betaMode = getcoefNR(n, y, x, 100);
    // printmatrix("betaMode.txt", betaMode);
 
    // Calculate posterior means for betas
-   gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 10000);
+   gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 100);
 
    printf(" Sample means:\n");
    for(i=0;i<(sampleMeans->size1);i++) {
@@ -356,7 +356,7 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    printf("    Laplace approximation = %.3f \n", lml_la);
 
    // Calculate log marginal likelihood using Monte Carlo integration
-   lml_mc = log(getMC(mystream, n, y, x, 10000));
+   lml_mc = log(getMC(mystream, n, y, x, 100));
    printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
    // Update output list

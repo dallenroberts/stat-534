@@ -42,9 +42,11 @@ int sameregression(int lenA1,int* A1,int lenA2,int* A2)
 
 //this function adds a new regression with predictors A
 //to the list of regressions. Here "regressions" represents
-//the head of the list, "lenA" is the number of predictors
-//and "lml_mc" is the Monte Carlo marginal likelihood of the regression
-//with predictors A 
+//the head of the list, "lenA" is the number of predictors with predictors A
+// gsl_matrix* beta is a 2x1 matrix of the regression coefficients beta0 and beta1 
+//"lml_mc" is the log marginal likelihood estimated by Monte Carlo integration
+//"lml_la" is the log marginal likelihood estimated using the LaPlace Approximation
+
 void AddRegression(int nMaxRegs, LPRegression regressions,int lenA,int* A, gsl_matrix* beta, double lml_mc, double lml_la)
 {
   int i;
