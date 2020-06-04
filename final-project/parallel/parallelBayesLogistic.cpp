@@ -380,6 +380,6 @@ double bayesLogistic(int index, gsl_rng* mystream) {
    gsl_matrix_free(betaMode);
    gsl_matrix_free(sampleMeans);
 
-   return(out)
+   return(out);
 
 }
