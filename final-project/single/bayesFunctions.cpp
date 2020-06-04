@@ -490,7 +490,7 @@ double getLaplaceApprox(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* betaMod
 	loglik_star = logisticLogLikStar(n, y, x, betaMode);
 
 	// Calculate log marginal likelihood
-	lml = 2.0*log(M_PI) + loglik_star - 0.5*logdet(hessian);
+	lml = log(2.0*M_PI) + loglik_star - 0.5*logdet(hessian);
 
 	// Free memory
 	gsl_matrix_free(hessian);
