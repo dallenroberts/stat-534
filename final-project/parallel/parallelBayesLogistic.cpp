@@ -35,6 +35,7 @@ static int myrank;
 int n = 148;
 int p = 61; 
 int response = 60; // Index of response column
+gsl_matrix* data = gsl_matrix_alloc(n, p); // Data matrix
 gsl_matrix* y = gsl_matrix_alloc(n, 1); // Response nx1 matrix
 
 // double ssy = 0.0;	// used in R2 calculation
@@ -42,7 +43,7 @@ gsl_matrix* y = gsl_matrix_alloc(n, 1); // Response nx1 matrix
 // Function Declarations
 void primary();
 void replica(int primaryname);
-// Bayes logistic here
+double bayesLogistic(int index, gsl_rng* mystream);
 
 int main(int argc, char* argv[])
 {
@@ -59,7 +60,6 @@ int main(int argc, char* argv[])
    MPI_Comm_rank(MPI_COMM_WORLD,&myrank);
 
    // Read in the data
-   gsl_matrix* data = gsl_matrix_alloc(n, p);
    FILE * f = fopen("534finalprojectdata.txt", "r");
    gsl_matrix_fscanf(f, data);
    fclose(f);
