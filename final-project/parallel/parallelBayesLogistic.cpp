@@ -341,7 +341,7 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    // printmatrix("betaMode.txt", betaMode);
 
    // Calculate posterior means for betas
-   gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 10000);
+   gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 100000);
 
    printf(" Sample means:\n");
    for(i=0;i<(sampleMeans->size1);i++) {

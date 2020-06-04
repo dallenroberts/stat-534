@@ -273,7 +273,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	double currentLoglik;
 	double newLoglik;
 	int iter = 0;
-	double tol = 0.00001;
+	double tol = 0.000001;
 
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
