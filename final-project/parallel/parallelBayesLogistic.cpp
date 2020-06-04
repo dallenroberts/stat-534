@@ -127,7 +127,6 @@ void primary() {
    jobsRunning = 1;
 
    for(i=0;i<response;i++) {
-   {
       // This will tell a replica which variable to work on
       work[0] = i;
 
