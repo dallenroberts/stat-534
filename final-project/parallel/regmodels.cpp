@@ -254,7 +254,7 @@ void SaveRegressions(char* filename,LPRegression regressions)
   }
 
   // Header
-  fprintf(out, "index\tlml_mc\t\tlml_la\t\tb0\t\tb1\n");
+  fprintf(out, "predictor\tlml_mc\t\tlml_la\t\tb0\t\tb1\n");
 
 
   //this is the first regression

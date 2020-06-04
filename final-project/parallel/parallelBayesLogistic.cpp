@@ -1,11 +1,17 @@
 /*
 Allen Roberts
-June 1, 2020
+June 4, 2020
 Stat 534
 Final Project
 
  This program computes the log marginal likelihood of several 
- univariate Bayes logistc regressions in parallel.
+ univariate Bayes logistc regressions in parallel. It outputs a text file
+ "bestregressions.txt" which contain the top 5 regressions, sorted by the 
+ log marginal likelihood estimated by Monte Carlo integration. The file also 
+ provides the predictor number (1:60), the log marginal likelihood as estimated using
+ the Laplace approximation, and the posterior estimates of the beta coefficients
+ from MCMC using the Metropolis-Hastings algorithm.
+
  Compile the program using the makefile provided.
  
  Run the program using the command:
