@@ -252,7 +252,7 @@ void primary() {
 
 void replica(int replicaname) {
    int work[1];			// the input from primary
-   double* out;      // Output from Bayes Logistic
+   // double out[5];      // Output from Bayes Logistic
    double workresults[5];	// the output for primary
    MPI_Status status;		// for MPI communication
 
@@ -287,8 +287,9 @@ void replica(int replicaname) {
            printf("Replica %d has received work request [%d]\n",
                   replicaname,work[0]);
           
-	        bayesLogistic(work[0], r, out);
-           workresults = *(out);
+	        bayesLogistic(work[0], r, workresults);
+
+           // workresults = *(out);
 
             // tell the primary what variable you're returning
             // workresults[0] = (double)work[0];
@@ -379,6 +380,5 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    gsl_matrix_free(x);
    gsl_matrix_free(betaMode);
    gsl_matrix_free(sampleMeans);
-
 
 }
