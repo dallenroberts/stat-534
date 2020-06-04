@@ -252,7 +252,7 @@ void primary() {
 
 void replica(int replicaname) {
    int work[1];			// the input from primary
-   double* out[5];      // Output from Bayes Logistic
+   double* out;      // Output from Bayes Logistic
    double workresults[5];	// the output for primary
    MPI_Status status;		// for MPI communication
 
