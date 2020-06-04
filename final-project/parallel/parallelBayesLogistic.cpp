@@ -342,6 +342,8 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
 
    }
 
+   printf("\nBL: First value is %.3f\n", gsl_matrix_get(data, 0, index));
+
    // Calculate beta modes using Newton-Raphson algorithm
    gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
    // printmatrix("betaMode.txt", betaMode);

@@ -275,6 +275,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	int iter = 0;
 	double tol = 0.00001;
 
+	printf("\nNR: First value is %.3f\n", gsl_matrix_get(x, 0, 0));
+
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
