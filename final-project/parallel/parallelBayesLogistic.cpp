@@ -369,17 +369,17 @@ double[5] bayesLogistic(int index, gsl_rng* mystream) {
    printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
    // Output double list
-   // out[0] = (double)(index+1);
-   // out[1] = lml_mc;
-   // out[2] = lml_la;
-   // out[3] = gsl_matrix_get(sampleMeans, 0, 0);
-   // out[4] = gsl_matrix_get(sampleMeans, 1, 0);
-
    out[0] = (double)(index+1);
    out[1] = lml_mc;
    out[2] = lml_la;
-   out[3] = 1.0;
-   out[4] = 1.0;
+   out[3] = gsl_matrix_get(sampleMeans, 0, 0);
+   out[4] = gsl_matrix_get(sampleMeans, 1, 0);
+
+   // out[0] = (double)(index+1);
+   // out[1] = lml_mc;
+   // out[2] = lml_la;
+   // out[3] = 1.0;
+   // out[4] = 1.0;
     
     // Free memory
    gsl_matrix_free(x);
