@@ -10,6 +10,7 @@ double inverseLogit(double x);
 double inverseLogit2(double x);
 gsl_matrix* getPi(int n, gsl_matrix* x, gsl_matrix* beta);
 gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta);
+double logisticLogLik(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta);
 double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta);
 void getHessian(int n, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* hessian);
 void getGradient(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta, gsl_matrix* gradient);

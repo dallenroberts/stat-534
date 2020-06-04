@@ -299,7 +299,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	while(iter < maxIter) {
 
 		iter += 1;
-		printf("\niter=%d", iter);
+		// printf("\niter=%d", iter);
 
 		// Get Hessian
 		getHessian(n, x, beta, hessian);

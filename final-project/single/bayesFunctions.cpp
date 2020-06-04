@@ -152,6 +152,32 @@ gsl_matrix* getPi2(int n, gsl_matrix* x, gsl_matrix* beta) {
 
 }
 
+// Logistic log-likelihood
+double logisticLogLik(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
+
+	double logLik = 0;
+	int i,j;
+	double yi;
+	double pi;
+
+	// getPis
+	gsl_matrix* Pis = getPi(n, x, beta);
+	// printmatrix("pis.txt", Pis);
+
+	// Calculate logistic log likelihood
+	for(i=0;i<n;i++) {
+
+		yi = gsl_matrix_get(y, i, 0);
+		pi = gsl_matrix_get(Pis, i, 0);
+
+		logLik += yi*log(pi) + (1.0-yi)*log(1.0-pi);
+	}
+
+	gsl_matrix_free(Pis);
+
+	return(logLik);
+}
+
 // Logistic log-likelihood star (from Bayesian logistic regression eq 2.5)
 double logisticLogLikStar(int n, gsl_matrix* y, gsl_matrix* x, gsl_matrix* beta) {
 
@@ -525,7 +551,7 @@ double getMC(gsl_rng* mystream, int n, gsl_matrix* y, gsl_matrix* x, int nsample
 		randomMVN(mystream, beta_j, priorCovMat, priorMeans);
 
 		// Calculate likelihood
-		sum += exp(logisticLogLikStar(n,y,x,beta_j));
+		sum += exp(logisticLogLik(n,y,x,beta_j));
 
 	}
 
