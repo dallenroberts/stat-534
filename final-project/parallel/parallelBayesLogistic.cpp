@@ -8,8 +8,8 @@ Final Project
  univariate Bayes logistc regressions in parallel. It outputs a text file
  "bestregressions.txt" which contain the top 5 regressions, sorted by the 
  log marginal likelihood estimated by Monte Carlo integration. The file also 
- provides the predictor number (1:60), the log marginal likelihood as estimated using
- the Laplace approximation, and the posterior estimates of the beta coefficients
+ provides the predictor column index j (1:60), the log marginal likelihood as estimated 
+ using the Laplace approximation, and the posterior estimates of the beta coefficients
  from MCMC using the Metropolis-Hastings algorithm.
 
  Compile the program using the makefile provided.
