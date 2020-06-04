@@ -252,7 +252,6 @@ void primary() {
 
 void replica(int replicaname) {
    int work[1];			// the input from primary
-   // double out[5];      // Output from Bayes Logistic
    double workresults[5];	// the output for primary
    MPI_Status status;		// for MPI communication
 
@@ -288,11 +287,6 @@ void replica(int replicaname) {
                   replicaname,work[0]);
           
 	        bayesLogistic(work[0], r, workresults);
-
-           // workresults = *(out);
-
-            // tell the primary what variable you're returning
-            // workresults[0] = (double)work[0];
 
             // Send the results
             MPI_Send(&workresults,
@@ -337,6 +331,8 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    int i;
    double lml_la;
    double lml_mc;
+
+   printf("\nThis replica is running a regression on index %i\n", index);
 
    // Initialize predictor column
    gsl_matrix* x = gsl_matrix_alloc(n, 1);
