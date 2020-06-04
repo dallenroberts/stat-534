@@ -160,7 +160,7 @@ void primary() {
  
          // Add the results to the regressions list
          lenA = 1;
-         A[0] = (int)workresults[0]+1;
+         A[0] = (int)workresults[0];
          lml_mc = workresults[1];
          lml_la = workresults[2];
          gsl_matrix_set(betas, 0, 0, workresults[3]);
