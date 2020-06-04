@@ -322,7 +322,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	
 		// Get product of hessian inverse and gradient
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
-		printf("\nNR: First value of hessian gradient is %.3f\n", gsl_matrix_get(hessianGrad, 0, 0));
+		printf("\nNR: First value of hessian gradient is %.3f\n", gsl_matrix_get(hessGrad, 0, 0));
 		// printmatrix("hessGrad.txt", hessGrad);
 	
 		// Update new beta
