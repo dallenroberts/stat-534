@@ -43,7 +43,7 @@ gsl_matrix* y = gsl_matrix_alloc(n, 1); // Response nx1 matrix
 // Function Declarations
 void primary();
 void replica(int primaryname);
-double* bayesLogistic(int index, gsl_rng* mystream);
+double bayesLogistic(int index, gsl_rng* mystream);
 
 int main(int argc, char* argv[])
 {
@@ -330,7 +330,7 @@ void replica(int replicaname) {
 // 2: log marginal likelihood (Laplace approximation)
 // 3: estimated coefficient of beta0 (intercept)
 // 4: estimated coefficient of beta1
-double* bayesLogistic(int index, gsl_rng* mystream) {
+double bayesLogistic(int index, gsl_rng* mystream) {
 
    int i;
    double lml_la;
@@ -369,11 +369,17 @@ double* bayesLogistic(int index, gsl_rng* mystream) {
    printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
    // Output double list
+   // out[0] = (double)(index+1);
+   // out[1] = lml_mc;
+   // out[2] = lml_la;
+   // out[3] = gsl_matrix_get(sampleMeans, 0, 0);
+   // out[4] = gsl_matrix_get(sampleMeans, 1, 0);
+
    out[0] = (double)(index+1);
    out[1] = lml_mc;
    out[2] = lml_la;
-   out[3] = gsl_matrix_get(sampleMeans, 0, 0);
-   out[4] = gsl_matrix_get(sampleMeans, 1, 0);
+   out[3] = 1.0;
+   out[4] = 1.0;
     
     // Free memory
    gsl_matrix_free(x);
