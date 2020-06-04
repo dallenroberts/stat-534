@@ -277,6 +277,8 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	printf("\nNR: First value is %.3f\n", gsl_matrix_get(x, 0, 0));
 
+	printf("\nHELLO!\n");
+
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
@@ -284,6 +286,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	gsl_matrix* newBeta = gsl_matrix_alloc(2, 1);
 
 	// Calculate log likelihood l*
+	printf("\nI'm HERE!\n");
 	currentLoglik = logisticLogLikStar(n, y, x, beta);
 	printf("\n NR: Initial value of logLik is %.3f\n", currentLoglik);
 
