@@ -25,32 +25,28 @@ Final Project
 #include "bayes.h"
 
 // For MPI communication
-#define GETR2	1
+#define GETBL	1
 #define SHUTDOWNTAG	0
 
 // Used to determine PRIMARY or REPLICA
 static int myrank;
 
 // Global variables
-int nobservations = 40;
-int nvariables = 1000;
-double* Y = NULL;
-double** X = NULL;
+int n = 148;
+int p = 61; 
+int response = 60; // Index of response column
+gsl_matrix* y = gsl_matrix_alloc(n, 1); // Response nx1 matrix
 
-double ssy = 0.0;	// used in R2 calculation
+// double ssy = 0.0;	// used in R2 calculation
 
 // Function Declarations
-void NormStand();
 void primary();
 void replica(int primaryname);
-double GetR2(int v);
-
+// Bayes logistic here
 
 int main(int argc, char* argv[])
 {
-   int i,j;
-   FILE *yin, *xin;
-   double tmp;
+   int i;
 
    ///////////////////////////
    // START THE MPI SESSION //
@@ -63,39 +59,20 @@ int main(int argc, char* argv[])
    MPI_Comm_rank(MPI_COMM_WORLD,&myrank);
 
    // Read in the data
-   xin = fopen("X.txt", "r");
-   yin = fopen("Y.txt", "r");
-   if( (NULL == xin) || (NULL == yin))
-   {
-      printf("Cannot open data file!\n");
-      MPI_Finalize();
-      exit(1);
+   gsl_matrix* data = gsl_matrix_alloc(n, p);
+   FILE * f = fopen("534finalprojectdata.txt", "r");
+   gsl_matrix_fscanf(f, data);
+   fclose(f);
+
+   // Define response variable
+   gsl_matrix* y = gsl_matrix_alloc(n, 1);
+
+   for(i=0;i<n;i++) {
+
+      gsl_matrix_set(x, i, 0, gsl_matrix_get(data, i, index));
+      gsl_matrix_set(y, i, 0, gsl_matrix_get(data, i, response));
+
    }
-
-   X = new double*[nobservations];
-   Y = new double[nobservations];
-
-   for(i=0; i<nobservations; i++)
-   {
-      X[i] = new double[nvariables];
-      for(j=0; j<nvariables; j++)
-      {
-         fscanf(xin, "%lf", &tmp);
-         X[i][j] = tmp;
-      }
-      fscanf(yin, "%lf", &tmp);
-      Y[i] = tmp;
-   }
-   
-   fclose(xin);
-   fclose(yin);
-
-   // Demean and standardize the data...
-   NormStand();
-
-   // Compute the ssy value
-   // Used to calculate R2
-   for(i=0; i<nobservations; i++) ssy += Y[i]*Y[i];
 
    // Branch off to primary or replica function
    // Primary has ID == 0, the replicas are then in order 1,2,3,...
@@ -109,13 +86,10 @@ int main(int argc, char* argv[])
       replica(myrank);
    }
 
-   // clean memory
-   for(i=0; i<nobservations; i++)
-   {
-      delete[] X[i]; X[i] = NULL;
-   }
-   delete[] Y; Y = NULL;
-   delete[] X; X = NULL;
+   // Free memory
+   gsl_matrix_free(data);
+   gsl_matrix_free(y);
+   gsl_matrix_free(betas);
 
    // Finalize the MPI session
    MPI_Finalize();
@@ -125,16 +99,26 @@ int main(int argc, char* argv[])
 
 void primary()
 {
-   int var;		// to loop over the variables
+   int i;		// to loop over the variables
    int rank;		// another looping variable
    int ntasks;		// the total number of replicas
    int jobsRunning;	// how many replicas we have working
    int work[1];		// information to send to the replicas
-   double workresults[2]; // info received from the replicas
-   FILE* fout;		// the output file
+   double workresults[5]; // info received from the replicas
    MPI_Status status;	// MPI information
 
-   fout = fopen("R2_values.txt","w");
+   int nMaxRegs = 5; // Maximum number of regressions to keep track of
+   int A[p-1]; //indices of the variables present in the regression
+   int lenA = -1; //number of indices
+   char outputfilename[] = "bestregressions.txt"; // The output filename for regressions
+
+   double lml_la;
+   double lml_mc;
+   gsl_matrix* betas = gsl_matrix_alloc(2, 1)l // Placeholder for coefficient estimates
+
+   //create the head of the list of regressions
+   LPRegression regressions = new Regression;
+   regressions->Next = NULL;
 
    // Find out how many replicas there are
    MPI_Comm_size(MPI_COMM_WORLD,&ntasks);
@@ -145,10 +129,10 @@ void primary()
    // parallel
    jobsRunning = 1;
 
-   for(var=0; var<nvariables; var++)
+   for(i=0;i<response;i++) {
    {
       // This will tell a replica which variable to work on
-      work[0] = var;
+      work[0] = i;
 
       if(jobsRunning < ntasks) // Do we have an available processor?
       {
@@ -157,7 +141,7 @@ void primary()
 		            1, 		// the size of the vector
 		            MPI_INT,	// the type of the vector
                   jobsRunning,	// the ID of the replica to use
-                  GETR2,	// tells the replica what to do
+                  GETBL,	// tells the replica what to do
                   MPI_COMM_WORLD); // send the request out to anyone
 				   // who is available
          printf("Primary sends out work request [%d] to replica [%d]\n",
@@ -170,7 +154,7 @@ void primary()
       else // all the processors are in use!
       {
          MPI_Recv(workresults,	// where to store the results
- 		            2,		// the size of the vector
+ 		            5,		// the size of the vector
 		            MPI_DOUBLE,	// the type of the vector
 	 	            MPI_ANY_SOURCE,
 		            MPI_ANY_TAG, 	
@@ -181,8 +165,17 @@ void primary()
          printf("Primary has received the result of work request [%d] from replica [%d]\n",
                 (int) workresults[0],status.MPI_SOURCE);
  
-         // Print out the results
-         fprintf(fout, "%d\t%f\n", (int)workresults[0]+1, workresults[1]);
+         // Add the results to the regressions list
+         lenA = 1;
+         A[0] = (int)workresults[0]+1;
+         lml_mc = work_results[1];
+         lml_la = work_results[2];
+         gsl_matrix_set(betas, 0, 0, workresults[3]);
+         gsl_matrix_set(betas, 0, 1, workresults[4]);
+
+         AddRegression(nMaxRegs, regressions,
+            lenA, A, sampleMeans, lml_la,
+            lml_mc);
 
          printf("Primary sends out work request [%d] to replica [%d]\n",
                 work[0],status.MPI_SOURCE);
@@ -193,7 +186,7 @@ void primary()
                   1,
                   MPI_INT,
                   status.MPI_SOURCE, // the replica that just returned
-                  GETR2,
+                  GETBL,
                   MPI_COMM_WORLD); 
       } // using all the processors
    } // loop over all the variables
@@ -208,7 +201,7 @@ void primary()
    for(rank=1; rank<jobsRunning; rank++)
    {
       MPI_Recv(workresults,
-               2,
+               5,
                MPI_DOUBLE,
                MPI_ANY_SOURCE,	// whoever is ready to report back
                MPI_ANY_TAG,
@@ -219,7 +212,16 @@ void primary()
                 (int) workresults[0]);
  
       //save the results received
-      fprintf(fout, "%d\t%f\n", (int)workresults[0]+1, workresults[1]);
+      lenA = 1;
+      A[0] = (int)workresults[0]+1;
+      lml_mc = work_results[1];
+      lml_la = work_results[2];
+      gsl_matrix_set(betas, 0, 0, workresults[3]);
+      gsl_matrix_set(betas, 0, 1, workresults[4]);
+
+      AddRegression(nMaxRegs, regressions,
+         lenA, A, sampleMeans, lml_la,
+         lml_mc);
    }
 
    printf("Tell the replicas to shutdown.\n");
@@ -238,7 +240,15 @@ void primary()
 
    printf("got to the end of Primary code\n");
 
-   fclose(fout);
+   //save the list in a file
+   SaveRegressions(outputfilename,regressions);
+
+   //delete all regressions
+   DeleteAllRegressions(regressions);
+
+   // Free memory
+   gsl_matrix_free(betas);
+   delete regressions; regressions = NULL;
 
    // return to the main function
    return;
@@ -248,8 +258,15 @@ void primary()
 void replica(int replicaname)
 {
    int work[1];			// the input from primary
-   double workresults[2];	// the output for primary
+   double workresults[5];	// the output for primary
    MPI_Status status;		// for MPI communication
+
+   // Initialize random number generator
+   const gsl_rng_type* T;
+   gsl_rng* r;
+   gsl_rng_env_setup();
+   T = gsl_rng_default;
+   r = gsl_rng_alloc(T);
 
    // the replica listens for instructions...
    int notDone = 1;
@@ -268,21 +285,21 @@ void replica(int replicaname)
       // switch on the type of work request
       switch(status.MPI_TAG)
       {
-         case GETR2:
-            // Get the R2 value for this variable
+         case GETBL:
+            // Run the Bayesian logistic regression for this variable
             // ...and save it in the results vector
 
            printf("Replica %d has received work request [%d]\n",
                   replicaname,work[0]);
           
-	        workresults[1] = GetR2(work[0]);
+	        workresults = bayesLogistic(work[0], r);
 
             // tell the primary what variable you're returning
-            workresults[0] = (double)work[0];
+            // workresults[0] = (double)work[0];
 
             // Send the results
             MPI_Send(&workresults,
-                     2,
+                     5,
                      MPI_DOUBLE,
                      0,		// send it to primary
                      0,		// doesn't need a TAG
@@ -304,111 +321,32 @@ void replica(int replicaname)
       }
    }
 
-   // No memory to clean up, so just return to the main function
+   // Free memory
+   gsl_rng_free(r);
+
+   // Return to main function
    return;
 }
 
-// Data must have zero mean and unit variance
-// This is only for 1 variable regressions without an intercept
-double GetR2(int v)
-{
-   int	i;
-   double tmp;
-
-   tmp = 0.0;
-   for(i=0; i<nobservations; i++)
-   {
-      tmp += (X[i][v]*Y[i]);
-   }
-   tmp = tmp*tmp / ((double)nobservations - 1.0);
-
-   return(tmp / ssy);
-}
-
-
-void NormStand()
-{
-   int i, j;
-   double tmp;
-
-   for(j=0; j<nvariables; j++)
-   {
-      tmp = 0.0;
-      for(i=0; i<nobservations; i++)
-      {
-         tmp += X[i][j];
-      }
-      for(i=0; i<nobservations; i++)
-      {
-         X[i][j] -= tmp/((double)nobservations);
-      }
-   }
-
-   tmp = 0.0;
-   for(i=0; i<nobservations; i++)
-   {
-      tmp += Y[i];
-   }
-   for(i=0; i<nobservations; i++) Y[i] -= tmp/((double)nobservations);
-
-   // Now make the data have unit sample variance
-   for(j=0; j<nvariables; j++)
-   {
-      tmp = 0.0;
-      for(i=0; i<nobservations; i++)
-      {
-         tmp += X[i][j]*X[i][j];
-      }
-
-      tmp = sqrt(tmp / ((double)nobservations-1.0));
-
-      for(i=0; i<nobservations; i++)
-      {
-         X[i][j] = X[i][j]/tmp;
-      }
-   }   
-
-   // Do the same for Y
-   tmp = 0.0;
-   for(i=0; i<nobservations; i++)
-   {
-      tmp += Y[i]*Y[i];
-   }
-   tmp = sqrt( tmp / ((double)nobservations - 1.0));
-
-   for(i=0; i<nobservations; i++)
-   {
-      Y[i] = Y[i]/tmp;
-   }
-
-   return;
-}
-
-// Adds a regression using predictor index to the LPRegression list regressions
-void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPRegression regressions) {
+// Inputs index and random number state and outputs a double vector of length 5
+// Output vector includes (in order):
+// 0: index of explanatory variable in data, 
+// 1: log marginal likelihood (Monte Carlo integration)
+// 2: log marginal likelihood (Laplace approximation)
+// 3: estimated coefficient of beta0 (intercept)
+// 4: estimated coefficient of beta1
+double bayesLogistic(int index, gsl_rng* mystream) {
 
    int i;
    double lml_la;
    double lml_mc;
-   int nMaxRegs = 5; // Maximum number of regressions to keep track of
-   int A[p-1]; //indices of the variables present in the regression
-   int lenA = -1; //number of indices
+   double out[5]; // Vector of doubles to output: index, lml_mc, lml_la, b0, and b1
 
-   // Loads 534finalprojectdata.txt. This file has 148 rows (samples) and 61 columns (variables). 
-   // The first 60 columns are associated with 60 explanatory variables X, 
-   // while column 61 (the last column) corresponds with the response binary variable Y
-   gsl_matrix* data = gsl_matrix_alloc(n, p);
-   FILE * f = fopen("534finalprojectdata.txt", "r");
-   gsl_matrix_fscanf(f, data);
-   fclose(f);
-
-   // Initialize predictor and response columns
+   // Initialize predictor column
    gsl_matrix* x = gsl_matrix_alloc(n, 1);
-   gsl_matrix* y = gsl_matrix_alloc(n, 1);
    for(i=0;i<n;i++) {
 
       gsl_matrix_set(x, i, 0, gsl_matrix_get(data, i, index));
-      gsl_matrix_set(y, i, 0, gsl_matrix_get(data, i, response));
 
    }
 
@@ -435,18 +373,18 @@ void bayesLogistic(int index, int n, int p, int response, gsl_rng* mystream, LPR
    lml_mc = log(getMC(mystream, n, y, x, 10000));
    printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
-   // Add to linked list
-   lenA = 1;
-    A[0] = index+1;
-    AddRegression(nMaxRegs, regressions,
-      lenA, A, sampleMeans, lml_la,
-      lml_mc);
+   // Output double list
+   out[0] = (double)(index+1);
+   out[1] = lml_mc;
+   out[2] = lml_la;
+   out[3] = gsl_matrix_get(sampleMeans, 0, 0);
+   out[4] = gsl_matrix_get(sampleMeans, 1, 0);
     
     // Free memory
    gsl_matrix_free(x);
-   gsl_matrix_free(y);
    gsl_matrix_free(betaMode);
    gsl_matrix_free(sampleMeans);
-   gsl_matrix_free(data);
+
+   return(out)
 
 }
