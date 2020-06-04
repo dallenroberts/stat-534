@@ -285,6 +285,7 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	// Calculate log likelihood l*
 	currentLoglik = logisticLogLikStar(n, y, x, beta);
+	printf("\n NR: Initial value of logLik is %.3f\n", currentLoglik);
 
 	// Matrix to store hessian
 	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
