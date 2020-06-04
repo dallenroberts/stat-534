@@ -64,8 +64,6 @@ int main(int argc, char* argv[])
    fclose(f);
 
    // Define response variable
-   gsl_matrix* y = gsl_matrix_alloc(n, 1);
-
    for(i=0;i<n;i++) {
 
       gsl_matrix_set(y, i, 0, gsl_matrix_get(data, i, response));
