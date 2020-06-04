@@ -343,11 +343,11 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    }
 
    // Calculate beta modes using Newton-Raphson algorithm
-   gsl_matrix* betaMode = getcoefNR(n, y, x, 100);
+   gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
    // printmatrix("betaMode.txt", betaMode);
 
    // Calculate posterior means for betas
-   gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 100);
+   gsl_matrix* sampleMeans = getPosteriorMeans(mystream, n, y, x, betaMode, 10000);
 
    printf(" Sample means:\n");
    for(i=0;i<(sampleMeans->size1);i++) {
@@ -362,7 +362,7 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    printf("    Laplace approximation = %.3f \n", lml_la);
 
    // Calculate log marginal likelihood using Monte Carlo integration
-   lml_mc = log(getMC(mystream, n, y, x, 100));
+   lml_mc = log(getMC(mystream, n, y, x, 10000));
    printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
    // Update output list
