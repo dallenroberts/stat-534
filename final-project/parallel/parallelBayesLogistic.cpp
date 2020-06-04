@@ -38,12 +38,11 @@ int response = 60; // Index of response column
 gsl_matrix* data = gsl_matrix_alloc(n, p); // Data matrix
 gsl_matrix* y = gsl_matrix_alloc(n, 1); // Response nx1 matrix
 
-// double ssy = 0.0;	// used in R2 calculation
 
 // Function Declarations
 void primary();
 void replica(int primaryname);
-double[5] bayesLogistic(int index, gsl_rng* mystream);
+void bayesLogistic(int index, gsl_rng* mystream, double* out);
 
 int main(int argc, char* argv[])
 {
@@ -253,6 +252,7 @@ void primary() {
 
 void replica(int replicaname) {
    int work[1];			// the input from primary
+   double* out[5];      // Output from Bayes Logistic
    double workresults[5];	// the output for primary
    MPI_Status status;		// for MPI communication
 
@@ -287,7 +287,8 @@ void replica(int replicaname) {
            printf("Replica %d has received work request [%d]\n",
                   replicaname,work[0]);
           
-	        workresults = bayesLogistic(work[0], r);
+	        bayesLogistic(work[0], r, out);
+           workresults = *(out);
 
             // tell the primary what variable you're returning
             // workresults[0] = (double)work[0];
@@ -330,12 +331,11 @@ void replica(int replicaname) {
 // 2: log marginal likelihood (Laplace approximation)
 // 3: estimated coefficient of beta0 (intercept)
 // 4: estimated coefficient of beta1
-double[5] bayesLogistic(int index, gsl_rng* mystream) {
+void bayesLogistic(int index, gsl_rng* mystream, double* out) {
 
    int i;
    double lml_la;
    double lml_mc;
-   double out[5]; // Vector of doubles to output: index, lml_mc, lml_la, b0, and b1
 
    // Initialize predictor column
    gsl_matrix* x = gsl_matrix_alloc(n, 1);
@@ -368,24 +368,17 @@ double[5] bayesLogistic(int index, gsl_rng* mystream) {
    lml_mc = log(getMC(mystream, n, y, x, 10000));
    printf("    Monte Carlo integration = %.3f \n", lml_mc);
 
-   // Output double list
+   // Update output list
    out[0] = (double)(index+1);
    out[1] = lml_mc;
    out[2] = lml_la;
    out[3] = gsl_matrix_get(sampleMeans, 0, 0);
    out[4] = gsl_matrix_get(sampleMeans, 1, 0);
 
-   // out[0] = (double)(index+1);
-   // out[1] = lml_mc;
-   // out[2] = lml_la;
-   // out[3] = 1.0;
-   // out[4] = 1.0;
-    
     // Free memory
    gsl_matrix_free(x);
    gsl_matrix_free(betaMode);
    gsl_matrix_free(sampleMeans);
 
-   return(out);
 
 }
