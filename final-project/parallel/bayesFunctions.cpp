@@ -275,8 +275,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 	int iter = 0;
 	double tol = 0.00001;
 
-	printf("\nNR: First value is %.3f\n", gsl_matrix_get(x, 0, 0));
-
 	// Initialize beta matrix
 	gsl_matrix* beta = gsl_matrix_alloc(2, 1);
 	gsl_matrix_set_zero(beta);
@@ -285,7 +283,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 
 	// Calculate log likelihood l*
 	currentLoglik = logisticLogLikStar(n, y, x, beta);
-	printf("\n NR: Initial value of logLik is %.3f\n", currentLoglik);
 
 	// Matrix to store hessian
 	gsl_matrix* hessian = gsl_matrix_alloc(2, 2);
@@ -307,29 +304,24 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// Get Hessian
 		getHessian(n, x, beta, hessian);
 		// printmatrix("hessian.txt", hessian);
-		printf("\nNR: First value of Hessian is %.3f\n", gsl_matrix_get(hessian, 0, 0));
 	
 		// Get gradient
 		getGradient(n, y, x, beta, gradient);
 		// printmatrix("gradient.txt", gradient);
-		printf("\nNR: First value of gradient is %.3f\n", gsl_matrix_get(gradient, 0, 0));
 	
 		// Get hessian inverse
 		inverse2(hessian, hessianInv);
-		printf("\nNR: First value of hessian inverse is %.3f\n", gsl_matrix_get(hessianInv, 0, 0));
 
 		// printmatrix("hessianInv.txt", hessianInv);
 	
 		// Get product of hessian inverse and gradient
 		gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, hessianInv, gradient, 0.0, hessGrad);
-		printf("\nNR: First value of hessian gradient is %.3f\n", gsl_matrix_get(hessGrad, 0, 0));
 		// printmatrix("hessGrad.txt", hessGrad);
 	
 		// Update new beta
 		gsl_matrix_memcpy(newBeta, beta);
 		gsl_matrix_sub(newBeta, hessGrad);
 		// printmatrix("newBeta.txt", newBeta);
-		printf("\nNR: First value of candidate beta is %.3f\n", gsl_matrix_get(newBeta, 0, 0));
 	
 		newLoglik = logisticLogLikStar(n, y, x, newBeta);
 		printf("\n newLoglik=%f", newLoglik);
@@ -343,7 +335,6 @@ gsl_matrix* getcoefNR(int n, gsl_matrix* y, gsl_matrix* x, int maxIter = 1000) {
 		// Update beta
 		gsl_matrix_memcpy(beta, newBeta);
 		// printmatrix("beta.txt", beta);
-		printf("\nNR: First value of btea (after update) is %.3f\n", gsl_matrix_get(beta, 0, 0));
 	
 		// Stop if the log-likelihood does not improve by too much
 		if((newLoglik - currentLoglik) < tol) {

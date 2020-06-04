@@ -330,8 +330,6 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
    double lml_la;
    double lml_mc;
 
-   printf("\nThis replica is running a regression on index %i\n", index);
-
    // Initialize predictor column
    gsl_matrix* x = gsl_matrix_alloc(n, 1);
    for(i=0;i<n;i++) {
@@ -339,8 +337,6 @@ void bayesLogistic(int index, gsl_rng* mystream, double* out) {
       gsl_matrix_set(x, i, 0, gsl_matrix_get(data, i, index));
 
    }
-
-   printf("\nBL: First value is %.3f\n", gsl_matrix_get(data, 0, index));
 
    // Calculate beta modes using Newton-Raphson algorithm
    gsl_matrix* betaMode = getcoefNR(n, y, x, 1000);
