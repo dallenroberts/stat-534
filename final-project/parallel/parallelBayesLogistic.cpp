@@ -69,7 +69,6 @@ int main(int argc, char* argv[])
 
    for(i=0;i<n;i++) {
 
-      gsl_matrix_set(x, i, 0, gsl_matrix_get(data, i, index));
       gsl_matrix_set(y, i, 0, gsl_matrix_get(data, i, response));
 
    }
@@ -89,7 +88,6 @@ int main(int argc, char* argv[])
    // Free memory
    gsl_matrix_free(data);
    gsl_matrix_free(y);
-   gsl_matrix_free(betas);
 
    // Finalize the MPI session
    MPI_Finalize();
@@ -114,7 +112,7 @@ void primary()
 
    double lml_la;
    double lml_mc;
-   gsl_matrix* betas = gsl_matrix_alloc(2, 1)l // Placeholder for coefficient estimates
+   gsl_matrix* betas = gsl_matrix_alloc(2, 1); // Placeholder for coefficient estimates
 
    //create the head of the list of regressions
    LPRegression regressions = new Regression;
@@ -168,13 +166,13 @@ void primary()
          // Add the results to the regressions list
          lenA = 1;
          A[0] = (int)workresults[0]+1;
-         lml_mc = work_results[1];
-         lml_la = work_results[2];
+         lml_mc = workresults[1];
+         lml_la = workresults[2];
          gsl_matrix_set(betas, 0, 0, workresults[3]);
          gsl_matrix_set(betas, 0, 1, workresults[4]);
 
          AddRegression(nMaxRegs, regressions,
-            lenA, A, sampleMeans, lml_la,
+            lenA, A, betas, lml_la,
             lml_mc);
 
          printf("Primary sends out work request [%d] to replica [%d]\n",
