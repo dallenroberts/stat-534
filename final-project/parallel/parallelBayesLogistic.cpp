@@ -5,7 +5,7 @@ Stat 534
 Final Project
 
  This program computes the log marginal likelihood of several 
- univariate Bayes logistc regressions in parallel. It outputs a text file
+ univariate Bayes logistic regressions in parallel. It outputs a text file
  "bestregressions.txt" which contain the top 5 regressions, sorted by the 
  log marginal likelihood estimated by Monte Carlo integration. The file also 
  provides the predictor column index j (1:60), the log marginal likelihood as estimated 
@@ -263,6 +263,9 @@ void replica(int replicaname) {
    gsl_rng_env_setup();
    T = gsl_rng_default;
    r = gsl_rng_alloc(T);
+   
+   // Set seed based on replica name
+   gsl_rng_set(r, replicaname);
 
    // the replica listens for instructions...
    int notDone = 1;
@@ -277,6 +280,8 @@ void replica(int replicaname) {
                MPI_COMM_WORLD,
                &status);
       printf("Replica %d just received smth\n",replicaname);
+
+
 
       // switch on the type of work request
       switch(status.MPI_TAG)

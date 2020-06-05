@@ -1,0 +1,18 @@
+Comments:
+
+The results of the program are stored in a text file called "bestregressions.txt".
+
+On my last parallelized run, these were my results using 10,000 iterations for both Monte Carlo integration and the Metropolis Hastings algorithm. 10,000 runs isn't quite enough to be completely stable, though - I've had some iterations return regression 42 instead of 21, or 42 instead of 1. This occurred occasionally even when I increased the numbeor of iterations to 100,000. Since we are ordering based on the Monte Carlo integration estimate of the log marginal likelihood, the ordering may differ for each run.
+
+j indexes the column of the dataset (1:60)
+lml_mc = Log marginal likelihood estimated by Monte Carlo integration
+lml_la = Log marginal likelihood estimated by Laplace approximation
+b0 = Metropolis-Hastings coefficient estimate for intercept (beta0)
+b1 = Metropolis-Hastings coefficient estimate for predictor (beta1)
+
+j		lml_mc		lml_la		b0			b1
+23		-79.415		-79.484		-0.901		1.244
+37		-83.489		-83.421		-0.847		1.018
+22		-84.134		-84.037		-0.837		0.976
+1		-84.206		-84.170		-0.758		1.014
+21		-85.740		-85.747		-0.821		0.893
